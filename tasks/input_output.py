@@ -3,6 +3,7 @@ from skimage.io import imread
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
+import image
 
 #dictionary of image datasets based on folder
 #folder_name is the key, list of image_dict is the value
@@ -79,6 +80,25 @@ def get_label_arr_from_dict(images_with_attributes, label_name):
     """
     return [image_dict[label_name] for image_dict in images_with_attributes]
 
+def get_image_objects_from_dict(images_with_attributes):
+	image_objects = []
+	for i in range(len(images_with_attributes)):
+		image_dict = images_with_attributes[i]
+		image_obj = Image(filename = image_dict['filename'], image_arr = image_dict['image'], type = image_dict['type'],
+						  subject_id = image_dict['subject_id'], image_id = image_dict['image_id'])
+		image_objects.append(image_obj)
+	return image_objects
+
+
+def get_image_objects_from_folder(folder_path):
+    image_objects = []
+    for entry in os.scandir(folder_path):
+        if entry.path.endswith('.png') and entry.is_file():
+            filename = entry.name
+            image = imread(entry.path, as_gray = True)
+            image_obj = Image(filename = filename, image_arr = image)
+            image_objects.append(image_obj)
+    return image_objects
 
 # Store the values to a csv file.
 def store_array_as_csv(array, folder_path, file_name):
