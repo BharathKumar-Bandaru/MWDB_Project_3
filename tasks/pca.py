@@ -3,7 +3,7 @@ from scipy.linalg import eigh as largest_eigh
 import os
 from skimage.io import imread
 import numpy as np
-import input_output
+from .input_output import *
 from skimage.feature import hog
 
 

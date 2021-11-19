@@ -3,7 +3,7 @@ import os
 import numpy as np
 from skimage.io import imread
 from tasks.task1_2 import *
-from input_output import *
+from tasks.input_output import *
 import warnings
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)

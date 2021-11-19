@@ -1,4 +1,4 @@
-from input_output import get_images_with_attributes, get_image_arr_from_dict, store_array_as_csv, get_images_and_attributes_from_folder, get_label_arr_from_dict
+from .input_output import get_images_with_attributes, get_image_arr_from_dict, store_array_as_csv, get_images_and_attributes_from_folder, get_label_arr_from_dict
 from .features import *
 from .pca import compute_pca
 from .svd import compute_svd
