@@ -1,6 +1,6 @@
-from Feature_models.ColorMoments import *
-from Feature_models.elbp import *
-from Feature_models.hog import *
+from .Feature_models.ColorMoments import *
+from .Feature_models.elbp import *
+from .Feature_models.hog import *
 from sklearn import preprocessing
 
 
