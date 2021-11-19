@@ -73,6 +73,12 @@ def get_image_arr_from_dict(images_with_attributes):
     """
     return [image_dict['image'] for image_dict in images_with_attributes]
 
+def get_label_arr_from_dict(images_with_attributes, label_name):
+    """
+    label_name: 'type', 'subject_id', or 'image_id'
+    """
+    return [image_dict[label_name] for image_dict in images_with_attributes]
+
 
 # Store the values to a csv file.
 def store_array_as_csv(array, folder_path, file_name):
