@@ -26,27 +26,31 @@ class PersonalizedPageRank:
         self.n = len(self.image_filenames)
         self.image_similarity_matrix = None
         """
-        self.image_objects = self.input_image_objects + self.test_image_object
+        self.image_objects = []
+        self.image_objects.extend(self.input_image_objects)
+        self.image_objects.append(self.test_image_object)
         self.num_nodes = len(self.image_objects)
         seed_node_index = self.num_nodes - 1
         self.seed_nodes = [seed_node_index]
         self.image_similarity_matrix = None
-        self.transition_matrix_TG = None
 
-    def get_image_similarity_matrix(self):
-        if self.image_similarity_matrix is not None:
-            return self.image_similarity_matrix
+    def compute_image_similarity_matrix(self):
         self.image_similarity_matrix = np.zeros((self.num_nodes, self.num_nodes))
-        for i in range(len(self.num_nodes)):
-            for j in range(i+1, self.num_nodes):
+        for i in range(self.num_nodes):
+            for j in range(i + 1, self.num_nodes):
                 dis = self.compute_distance(self.image_objects[i], self.image_objects[j])
                 self.image_similarity_matrix[i][j] = dis
                 self.image_similarity_matrix[j][i] = dis
+
+    def get_image_similarity_matrix(self):
+        if self.image_similarity_matrix is None:
+            self.compute_image_similarity_matrix()
+
         return self.image_similarity_matrix
 
     def compute_ppr_scores(self, similarity_matrix, seed_nodes, num_similar_nodes = 10, beta = 0.15):
         numNodes = len(similarity_matrix)
-        transition_matrix_TG = np.zeros(numNodes, numNodes)
+        transition_matrix_TG = np.zeros((numNodes, numNodes))
 
         for node in range(numNodes):
             similar_nodes = self.getTopSimilarObjects(node, num_similar_nodes, similarity_matrix)
@@ -101,3 +105,8 @@ class PersonalizedPageRank:
         if image_obj_1.latent_features is not None and image_obj_2.latent_features is not None:
             dis = distance.euclidean(image_obj_1.latent_features, image_obj_2.latent_features)
         return dis
+
+    def get_classified_label(self):
+        image_similarity_matrix = self.get_image_similarity_matrix()
+        ppr_scores = self.compute_ppr_scores(similarity_matrix = image_similarity_matrix, seed_nodes = self.seed_nodes)
+        print(ppr_scores)

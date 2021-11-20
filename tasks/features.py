@@ -15,6 +15,10 @@ def get_flattened_features_for_images(images, feature_model):
 		#print(f"{len(flattened_features_list[-1])}, feature:{feature_model} - Get flattened features size after flattened.")
 	return flattened_features_list
 
+# Will flatten the image
+def get_flattened_features_for_a_single_image(image, feature_model):
+	image_features = compute_features(image, feature_model)
+	return image_features.flatten()
 
 # compute the features and return the values
 def compute_features(image, feature_model):

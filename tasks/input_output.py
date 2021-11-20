@@ -3,7 +3,7 @@ from skimage.io import imread
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
-from image import Image
+from .image import Image
 
 #dictionary of image datasets based on folder
 #folder_name is the key, list of image_dict is the value
