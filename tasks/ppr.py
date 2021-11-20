@@ -2,7 +2,7 @@ from scipy.spatial import distance
 import numpy as np
 from numpy import linalg
 
-class PPRClassifier:
+class PersonalizedPageRank:
     def __init__(self, input_image_objects, test_image_object, num_similar_nodes_to_form_graph = 10, beta = 0.15):
         self.input_image_objects = input_image_objects
         self.test_image_object = test_image_object

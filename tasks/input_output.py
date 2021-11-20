@@ -3,7 +3,7 @@ from skimage.io import imread
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
-import image
+from image import Image
 
 #dictionary of image datasets based on folder
 #folder_name is the key, list of image_dict is the value
@@ -38,6 +38,15 @@ def get_images_and_attributes_from_folder(folder_path):
     image_dataset_dict[folder_path] = images_with_attributes
     return images_with_attributes
 
+def get_image_objects_from_folder(folder_path):
+    image_objects = []
+    for entry in os.scandir(folder_path):
+        if entry.path.endswith('.png') and entry.is_file():
+            filename = entry.name
+            image = imread(entry.path, as_gray = True)
+            image_obj = Image(filename = filename, image_arr = image)
+            image_objects.append(image_obj)
+    return image_objects
 
 # Filter the images based on search criteria.
 def filter_images(images_with_attributes, filter_based_on = 'none', filter_value = ''):
@@ -90,15 +99,7 @@ def get_image_objects_from_dict(images_with_attributes):
 	return image_objects
 
 
-def get_image_objects_from_folder(folder_path):
-    image_objects = []
-    for entry in os.scandir(folder_path):
-        if entry.path.endswith('.png') and entry.is_file():
-            filename = entry.name
-            image = imread(entry.path, as_gray = True)
-            image_obj = Image(filename = filename, image_arr = image)
-            image_objects.append(image_obj)
-    return image_objects
+
 
 # Store the values to a csv file.
 def store_array_as_csv(array, folder_path, file_name):
