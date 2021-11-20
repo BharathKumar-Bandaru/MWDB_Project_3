@@ -8,6 +8,7 @@ class PersonalizedPageRank:
         self.test_image_object = test_image_object
         self.num_similar_nodes = num_similar_nodes_to_form_graph
         self.beta = beta
+        self.ppr_scores = None
         self.initialize()
 
     def initialize(self):
@@ -49,7 +50,9 @@ class PersonalizedPageRank:
         return self.image_similarity_matrix
 
     def compute_ppr_scores(self, similarity_matrix, seed_nodes, num_similar_nodes = 10, beta = 0.15):
+
         numNodes = len(similarity_matrix)
+        num_similar_nodes = min(num_similar_nodes, numNodes)
         transition_matrix_TG = np.zeros((numNodes, numNodes))
 
         for node in range(numNodes):
@@ -92,7 +95,7 @@ class PersonalizedPageRank:
         # RPR-2 Scores (Robust Personalized Page Rank Scores)
         PPR_Scores_matrix = sum(Pi_dict.values()) / len(Pi_dict)  # Taking average of all Pi values
         PPR_Scores = [scoreMatrix.item() for scoreMatrix in PPR_Scores_matrix]
-        return PPR_Scores
+        self.ppr_scores = PPR_Scores
 
     def getTopSimilarObjects(self, node, num_similar_nodes, similarity_matrix):
         n = num_similar_nodes
@@ -106,7 +109,9 @@ class PersonalizedPageRank:
             dis = distance.euclidean(image_obj_1.latent_features, image_obj_2.latent_features)
         return dis
 
-    def get_classified_label(self):
-        image_similarity_matrix = self.get_image_similarity_matrix()
-        ppr_scores = self.compute_ppr_scores(similarity_matrix = image_similarity_matrix, seed_nodes = self.seed_nodes)
-        print(ppr_scores)
+    def get_ppr_scores_for_input_images(self):
+        if self.ppr_scores is None:
+            image_similarity_matrix = self.get_image_similarity_matrix()
+            self.compute_ppr_scores(similarity_matrix = image_similarity_matrix, seed_nodes = self.seed_nodes)
+
+        return self.ppr_scores[:len(self.input_image_objects)] #excluding the seed nodes

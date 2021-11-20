@@ -2,7 +2,7 @@ from tasks.input_output import *
 from tasks.features import *
 from tasks.dim_red import perform_dim_red
 import numpy as np
-from tasks.ppr import PersonalizedPageRank
+from tasks.PPRClassifier import PersonalizedPageRankClassifier
 
 def supply_inputs_to_ppr(input_folder_path = 'Dataset', test_folder_path = 'Dataset', feature_model = 'elbp', k = 100,
 						 label_name = 'type', dim_red_technique = 'svd', output_folder='output',
@@ -23,7 +23,6 @@ def supply_inputs_to_ppr(input_folder_path = 'Dataset', test_folder_path = 'Data
 
 	test_image_objects = get_image_objects_from_folder(test_folder_path)
 
-#	assign features to test_image_objects -
 	for image_object in test_image_objects:
 		image = image_object.image_arr
 		features = get_flattened_features_for_a_single_image(image,feature_model)
@@ -33,11 +32,13 @@ def supply_inputs_to_ppr(input_folder_path = 'Dataset', test_folder_path = 'Data
 	test(image_objects, test_image_objects)
 
 def test(image_objects, test_image_objects):
-	ppr_class = PersonalizedPageRank(input_image_objects = image_objects, test_image_object = test_image_objects[0])
-	ppr_class.get_classified_label()
+	ppr_classifier = PersonalizedPageRankClassifier(input_image_objects = image_objects,
+										 test_image_objects = test_image_objects,
+										 classification_label = 'type')
+	ppr_classifier.get_classified_labels()
 
 
-supply_inputs_to_ppr(input_folder_path='Sample_Dataset', test_folder_path='Sample_Dataset', feature_model='elbp', k=100,
+supply_inputs_to_ppr(input_folder_path='Dataset', test_folder_path='Sample_Dataset', feature_model='elbp', k=100,
 						 label_name='type',
 						 dim_red_technique='svd')
 
