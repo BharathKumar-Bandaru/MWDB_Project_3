@@ -58,7 +58,7 @@ def test(image_objects, test_image_objects):
 	print(image_sample_labels)
 
 
-supply_inputs_to_ppr(input_folder_path='Dataset', test_folder_path='Sample_Dataset', feature_model='elbp', k=100,
+supply_inputs_to_ppr(input_folder_path='Dataset_100', test_folder_path='Sample_Dataset', feature_model='elbp', k=100,
 						 label_name='type',
 						 dim_red_technique='svd')
 
