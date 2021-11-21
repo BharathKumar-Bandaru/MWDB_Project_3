@@ -93,7 +93,8 @@ class PersonalizedPageRank:
 
         # Step 4
         # RPR-2 Scores (Robust Personalized Page Rank Scores)
-        PPR_Scores_matrix = sum(Pi_dict.values()) / len(Pi_dict)  # Taking average of all Pi values
+
+        PPR_Scores_matrix = sum([Pi_dict[node] for node in S_crit]) / len(S_crit) # Taking average of all scores in S_crit
         PPR_Scores = [scoreMatrix.item() for scoreMatrix in PPR_Scores_matrix]
         self.ppr_scores = PPR_Scores
 
