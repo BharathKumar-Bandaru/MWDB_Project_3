@@ -34,8 +34,28 @@ def supply_inputs_to_ppr(input_folder_path = 'Dataset', test_folder_path = 'Data
 def test(image_objects, test_image_objects):
 	ppr_classifier = PersonalizedPageRankClassifier(input_image_objects = image_objects,
 										 test_image_objects = test_image_objects,
-										 classification_label = 'type')
-	ppr_classifier.get_classified_labels()
+										 classification_label = 'type',
+										num_nodes_to_consider_for_classifying = 15,
+										num_similar_nodes_to_form_graph = 15)
+	type_labels = ppr_classifier.get_classified_labels()
+	print('Type Labels:')
+	print(type_labels)
+	ppr_classifier = PersonalizedPageRankClassifier(input_image_objects=image_objects,
+													test_image_objects=test_image_objects,
+													classification_label='subject_id',
+													num_nodes_to_consider_for_classifying=45,
+													num_similar_nodes_to_form_graph=45)
+	subject_labels = ppr_classifier.get_classified_labels()
+	print('Subject Labels:')
+	print(subject_labels)
+	ppr_classifier = PersonalizedPageRankClassifier(input_image_objects=image_objects,
+													test_image_objects=test_image_objects,
+													classification_label='image_id',
+													num_nodes_to_consider_for_classifying=12,
+													num_similar_nodes_to_form_graph=12)
+	image_sample_labels = ppr_classifier.get_classified_labels()
+	print('Image Sample Labels:')
+	print(image_sample_labels)
 
 
 supply_inputs_to_ppr(input_folder_path='Dataset', test_folder_path='Sample_Dataset', feature_model='elbp', k=100,
