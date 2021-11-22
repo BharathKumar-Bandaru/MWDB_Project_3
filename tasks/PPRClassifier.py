@@ -29,7 +29,7 @@ class PersonalizedPageRankClassifier:
             if len(label_dict) > 0:
                 sorted_items = sorted(label_dict.items(), key = lambda x: x[1], reverse = True)
                 labels.append(sorted_items[0][0])
-            return labels
+        return labels
 
 
 

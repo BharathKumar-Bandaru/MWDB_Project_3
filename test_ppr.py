@@ -15,18 +15,22 @@ def supply_inputs_to_ppr(input_folder_path = 'Dataset', test_folder_path = 'Data
 	dim_red_technique = dim_red_technique.lower()
 	left_factor_matrix, right_factor_matrix = perform_dim_red(dim_red_technique, image_features, k)
 
-	image_objects = get_image_objects_from_dict(images_with_attributes)
+	latent_semantics = right_factor_matrix
+
+	#---
+	transposed_latent_semantics = np.matrix.transpose(latent_semantics)
+	image_objects = get_image_objects_from_dict(images_with_attributes, image_features)
 	for i in range(len(image_objects)):
 		image_obj = image_objects[i]
-		img_latent_features = left_factor_matrix[i]
-		image_obj.set_latent_features(img_latent_features)
+		latent_features = np.matmul(image_obj.features, transposed_latent_semantics)
+		image_obj.set_latent_features(latent_features)
 
 	test_image_objects = get_image_objects_from_folder(test_folder_path)
 
 	for image_object in test_image_objects:
 		image = image_object.image_arr
 		features = get_flattened_features_for_a_single_image(image,feature_model)
-		latent_features = np.matmul(features, np.matrix.transpose(right_factor_matrix))
+		latent_features = np.matmul(features, transposed_latent_semantics)
 		image_object.set_latent_features(latent_features)
 
 	test(image_objects, test_image_objects)
@@ -58,7 +62,7 @@ def test(image_objects, test_image_objects):
 	print(image_sample_labels)
 
 
-supply_inputs_to_ppr(input_folder_path='Dataset_100', test_folder_path='Sample_Dataset', feature_model='elbp', k=100,
+supply_inputs_to_ppr(input_folder_path='Dataset_100', test_folder_path='Test_Dataset', feature_model='elbp', k=100,
 						 label_name='type',
 						 dim_red_technique='svd')
 

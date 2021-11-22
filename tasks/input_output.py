@@ -89,12 +89,13 @@ def get_label_arr_from_dict(images_with_attributes, label_name):
     """
     return [image_dict[label_name] for image_dict in images_with_attributes]
 
-def get_image_objects_from_dict(images_with_attributes):
+def get_image_objects_from_dict(images_with_attributes, features_list):
 	image_objects = []
 	for i in range(len(images_with_attributes)):
 		image_dict = images_with_attributes[i]
 		image_obj = Image(filename = image_dict['filename'], image_arr = image_dict['image'], type = image_dict['type'],
-						  subject_id = image_dict['subject_id'], image_id = image_dict['image_id'])
+						  subject_id = image_dict['subject_id'], image_id = image_dict['image_id'],
+                          features = features_list[i])
 		image_objects.append(image_obj)
 	return image_objects
 
