@@ -107,7 +107,8 @@ class PersonalizedPageRank:
     def compute_distance(self, image_obj_1, image_obj_2):
         dis = float('inf')
         if image_obj_1.latent_features is not None and image_obj_2.latent_features is not None:
-            dis = distance.euclidean(image_obj_1.latent_features, image_obj_2.latent_features)
+            #dis = distance.euclidean(image_obj_1.latent_features, image_obj_2.latent_features)
+            dis = distance.cityblock(image_obj_1.latent_features, image_obj_2.latent_features)
         return dis
 
     def get_ppr_scores_for_input_images(self):

@@ -17,13 +17,16 @@ def task(input_folder_path = 'Dataset', test_folder_path = 'Dataset', feature_mo
 
 	#latent_semantics = right_factor_matrix
 	#store_array_as_csv(latent_semantics, output_folder, latent_semantics_file_name)
-	process_ppr(latent_semantics_file_path = os.path.join(output_folder, latent_semantics_file_name), images_with_attributes = images_with_attributes, image_features = image_features, test_folder_path = test_folder_path, feature_model = feature_model)
+	process_ppr(latent_semantics_file_path = os.path.join(output_folder, latent_semantics_file_name),
+				images_with_attributes = images_with_attributes, image_features = image_features,
+				test_folder_path = test_folder_path, feature_model = feature_model)
 
 def process_ppr(latent_semantics_file_path, images_with_attributes, image_features, test_folder_path, feature_model):
 	image_objects, test_image_objects = get_inputs_for_ppr(latent_semantics_file_path, images_with_attributes, image_features, test_folder_path, feature_model)
-	run_ppr(image_objects, test_image_objects, 'type', 3, 15)
-	run_ppr(image_objects, test_image_objects, 'subject_id', 3, 45)
-	run_ppr(image_objects, test_image_objects, 'image_id', 3, 12)
+	run_ppr(image_objects, test_image_objects, 'type', 2, 15) #task1
+	run_ppr(image_objects, test_image_objects, 'subject_id', 2, 15) #task2
+	run_ppr(image_objects, test_image_objects, 'image_id', 2, 15) #task3
+	
 
 def get_inputs_for_ppr(latent_semantics_file_path, images_with_attributes, image_features, test_folder_path, feature_model):
 	latent_semantics = np.matrix(genfromtxt(latent_semantics_file_path, delimiter=','))

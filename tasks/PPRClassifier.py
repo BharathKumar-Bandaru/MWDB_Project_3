@@ -39,7 +39,7 @@ class PersonalizedPageRankClassifier:
                 label_val = getattr(img_obj, self.classification_label)
                 if label_val not in label_dict:
                     label_dict[label_val] = 0
-                label_dict[label_val] += ppr_scores[index]   #we can try adding PPR Scores instead of 1
+                label_dict[label_val] += 1
 
             if len(label_dict) > 0:
                 sorted_items = sorted(label_dict.items(), key = lambda x: x[1], reverse = True)
