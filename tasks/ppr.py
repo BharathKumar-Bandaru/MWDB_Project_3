@@ -60,7 +60,7 @@ class PersonalizedPageRank:
             for similar_node in similar_nodes:
                 transition_matrix_TG[node][similar_node] = 1 / num_similar_nodes
 
-        print('Calculating Robust Personalized Page Rank scores relative to the seed nodes..')
+        #print('Calculating Robust Personalized Page Rank scores relative to the seed nodes..')
 
         # Step 1
         Pi_dict = {}  # key = seed_node, value = Pi_i vector

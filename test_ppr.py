@@ -2,22 +2,31 @@ from tasks.input_output import *
 from tasks.features import *
 from tasks.dim_red import perform_dim_red
 import numpy as np
+from numpy import genfromtxt
 from tasks.PPRClassifier import PersonalizedPageRankClassifier
 
-def supply_inputs_to_ppr(input_folder_path = 'Dataset', test_folder_path = 'Dataset', feature_model = 'elbp', k = 100,
+def task(input_folder_path = 'Dataset', test_folder_path = 'Dataset', feature_model = 'elbp', k = 100,
 						 label_name = 'type', dim_red_technique = 'svd', output_folder='output',
 						 latent_semantics_file_name='task1_latent_semantics.csv'):
 	images_with_attributes = get_images_and_attributes_from_folder(input_folder_path)
 	images = get_image_arr_from_dict(images_with_attributes)
-	#labels = get_label_arr_from_dict(images_with_attributes, label_name = label_name)
 	image_features = get_flattened_features_for_images(images, feature_model)
 
-	dim_red_technique = dim_red_technique.lower()
-	left_factor_matrix, right_factor_matrix = perform_dim_red(dim_red_technique, image_features, k)
+	#dim_red_technique = dim_red_technique.lower()
+	#left_factor_matrix, right_factor_matrix = perform_dim_red(dim_red_technique, image_features, k)
 
-	latent_semantics = right_factor_matrix
+	#latent_semantics = right_factor_matrix
+	#store_array_as_csv(latent_semantics, output_folder, latent_semantics_file_name)
+	process_ppr(latent_semantics_file_path = os.path.join(output_folder, latent_semantics_file_name), images_with_attributes = images_with_attributes, image_features = image_features, test_folder_path = test_folder_path, feature_model = feature_model)
 
-	#---
+def process_ppr(latent_semantics_file_path, images_with_attributes, image_features, test_folder_path, feature_model):
+	image_objects, test_image_objects = get_inputs_for_ppr(latent_semantics_file_path, images_with_attributes, image_features, test_folder_path, feature_model)
+	run_ppr(image_objects, test_image_objects, 'type', 3, 15)
+	run_ppr(image_objects, test_image_objects, 'subject_id', 3, 45)
+	run_ppr(image_objects, test_image_objects, 'image_id', 3, 12)
+
+def get_inputs_for_ppr(latent_semantics_file_path, images_with_attributes, image_features, test_folder_path, feature_model):
+	latent_semantics = np.matrix(genfromtxt(latent_semantics_file_path, delimiter=','))
 	transposed_latent_semantics = np.matrix.transpose(latent_semantics)
 	image_objects = get_image_objects_from_dict(images_with_attributes, image_features)
 	for i in range(len(image_objects)):
@@ -33,36 +42,19 @@ def supply_inputs_to_ppr(input_folder_path = 'Dataset', test_folder_path = 'Data
 		latent_features = np.matmul(features, transposed_latent_semantics)
 		image_object.set_latent_features(latent_features)
 
-	test(image_objects, test_image_objects)
+	return image_objects, test_image_objects
 
-def test(image_objects, test_image_objects):
+def run_ppr(image_objects, test_image_objects, classification_label = 'type', num_nodes_to_consider_for_classifying = 15, num_similar_nodes_to_form_graph = 15):
 	ppr_classifier = PersonalizedPageRankClassifier(input_image_objects = image_objects,
 										 test_image_objects = test_image_objects,
-										 classification_label = 'type',
-										num_nodes_to_consider_for_classifying = 15,
-										num_similar_nodes_to_form_graph = 15)
-	type_labels = ppr_classifier.get_classified_labels()
-	print('Type Labels:')
-	print(type_labels)
-	ppr_classifier = PersonalizedPageRankClassifier(input_image_objects=image_objects,
-													test_image_objects=test_image_objects,
-													classification_label='subject_id',
-													num_nodes_to_consider_for_classifying=45,
-													num_similar_nodes_to_form_graph=45)
-	subject_labels = ppr_classifier.get_classified_labels()
-	print('Subject Labels:')
-	print(subject_labels)
-	ppr_classifier = PersonalizedPageRankClassifier(input_image_objects=image_objects,
-													test_image_objects=test_image_objects,
-													classification_label='image_id',
-													num_nodes_to_consider_for_classifying=12,
-													num_similar_nodes_to_form_graph=12)
-	image_sample_labels = ppr_classifier.get_classified_labels()
-	print('Image Sample Labels:')
-	print(image_sample_labels)
+										 classification_label = classification_label,
+										num_nodes_to_consider_for_classifying = num_nodes_to_consider_for_classifying,
+										num_similar_nodes_to_form_graph = num_similar_nodes_to_form_graph)
+	labels = ppr_classifier.get_classified_labels()
+	print('\n-------' + classification_label + ' labels: --------')
+	print(labels)
+	print('\n-----------------------------------------------------------')
 
-
-supply_inputs_to_ppr(input_folder_path='Dataset_100', test_folder_path='Test_Dataset', feature_model='elbp', k=100,
+task(input_folder_path='Dataset_100', test_folder_path='Test_Dataset', feature_model='elbp', k=100,
 						 label_name='type',
 						 dim_red_technique='svd')
-
