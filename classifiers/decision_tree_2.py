@@ -106,6 +106,7 @@ class DecisionTreeClassifier():
         return D_Node(rule, left_br, right_br)
 
     def predict(self, row, node):
+        #print("predict: ")
         if isinstance(node, Leaf_Node):
             return node.future_pred
 

@@ -173,13 +173,17 @@ def calculate_latent_semantics_with_type_labels(feature_model, k, dim_red_techni
     left_factor_matrix, right_factor_matrix = perform_dim_red(dim_red_technique, image_features, k)
     if label_type == "type":
         labels = get_type_label_arr_from_dict(images_with_attributes)
+        store_array_as_csv(right_factor_matrix, output_folder, "images_arr.csv")
         add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_type.csv")
+        store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_type.csv")
     elif label_type == "subject":
         labels = get_subject_arr_from_dict(images_with_attributes)
         add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_subject.csv")
+        store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_subject.csv")
     else:
         labels = get_image_id_arr_from_dict(images_with_attributes)
         add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_image.csv")
+        store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_image.csv")
 
 
 def perform_post_operations(images_with_attributes, left_factor_matrix, right_factor_matrix, output_folder,
@@ -229,5 +233,4 @@ def get_subject_arr_from_dict(images_with_attributes):
 
 
 def get_image_id_arr_from_dict(images_with_attributes):
-
     return [image_dict['image_id'] for image_dict in images_with_attributes]
