@@ -35,14 +35,14 @@ def normalize(X, axis=-1, order=2):
     return X / np.expand_dims(l2, axis)
 
 
-def retrive_features_task1(folder_path, feature_model, dim_red, k):
+def retrive_features_task1(folder_path, feature_model, dim_red, k, filter="type"):
     # Data retrieval for given folder
     images_data = get_images_with_attributes(folder_path=folder_path, filter='none', filter_value=None)
-    X_data, labels = process_data(images_data, filter_type="type")
+    X_data, labels = process_data(images_data, filter_type=filter)
     # Do the feature extraction
     feature_model = feature_model
     features = get_flattened_features_for_images(X_data, feature_model)
     # Do the dimentionality reduction
     k = k
     new_features = perform_dim_red(dim_red, features, k)
-    return np.array(new_features[0]), np.array(labels)
+    return np.array(new_features[1]), np.array(labels), np.array(features)
