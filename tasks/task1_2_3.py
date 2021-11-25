@@ -5,7 +5,6 @@ from numpy import genfromtxt
 from ppr_task import perform_ppr_classification
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
-latent_semantics_file_id = 0
 
 # Entry for tasks 1,2, and 3
 def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_path, classifier,
@@ -26,8 +25,7 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
         latent_semantics = right_factor_matrix
 
         if latent_semantics_file_name is None:
-            latent_semantics_file_id += 1
-            latent_semantics_file_name = f'[{latent_semantics_file_id}]_task_{task_number}_{feature_model}_{dim_red_technique}_{k}_latent_semantics.csv'
+            latent_semantics_file_name = f'task_{task_number}_{feature_model}_{dim_red_technique}_{k}_latent_semantics.csv'
         store_array_as_csv(latent_semantics, output_folder, latent_semantics_file_name)
 
         #Storing into cache
