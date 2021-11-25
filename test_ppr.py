@@ -26,7 +26,7 @@ def process_ppr(latent_semantics_file_path, images_with_attributes, image_featur
 	run_ppr(image_objects, test_image_objects, 'type', 2, 15) #task1
 	run_ppr(image_objects, test_image_objects, 'subject_id', 2, 15) #task2
 	run_ppr(image_objects, test_image_objects, 'image_id', 2, 15) #task3
-	
+
 
 def get_inputs_for_ppr(latent_semantics_file_path, images_with_attributes, image_features, test_folder_path, feature_model):
 	latent_semantics = np.matrix(genfromtxt(latent_semantics_file_path, delimiter=','))
