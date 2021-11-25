@@ -2,7 +2,7 @@ from .input_output import *
 from .features import *
 from .dim_red import perform_dim_red
 from numpy import genfromtxt
-from ppr_task import perform_ppr_classification
+from .ppr_task import perform_ppr_classification
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
 
@@ -10,29 +10,37 @@ cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'im
 def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_path, classifier,
                dim_red_technique = 'svd', output_folder = 'output', latent_semantics_file_name = None,
                use_cached_input_images = True):
-
-    if use_cached_input_images is True and input_folder_path in cache_for_input_images:
-        images_with_attributes = cache_for_input_images[input_folder_path]['images_with_attributes']
-        image_features = cache_for_input_images[input_folder_path]['image_features']
-        latent_semantics_file_path = cache_for_input_images[input_folder_path]['latent_semantics_file_path']
+    key = f'{input_folder_path}_{feature_model}_{dim_red_technique}_{k}'
+    latent_semantics = None
+    if use_cached_input_images is True and key in cache_for_input_images:
+        print('Using existing cache for latent semantics')
+        images_with_attributes = cache_for_input_images[key]['images_with_attributes']
+        image_features = cache_for_input_images[key]['image_features']
+        latent_semantics_file_path = cache_for_input_images[key]['latent_semantics_file_path']
         latent_semantics = np.matrix(genfromtxt(latent_semantics_file_path, delimiter=','))
     else:
         images_with_attributes = get_images_and_attributes_from_folder(input_folder_path)
         images = get_image_arr_from_dict(images_with_attributes)
         image_features = get_flattened_features_for_images(images, feature_model)
-        dim_red_technique = dim_red_technique.lower()
-        left_factor_matrix, right_factor_matrix = perform_dim_red(dim_red_technique, image_features, k)
-        latent_semantics = right_factor_matrix
 
         if latent_semantics_file_name is None:
-            latent_semantics_file_name = f'task_{task_number}_{feature_model}_{dim_red_technique}_{k}_latent_semantics.csv'
-        store_array_as_csv(latent_semantics, output_folder, latent_semantics_file_name)
+            latent_semantics_file_name = f'{feature_model}_{dim_red_technique}_{k}_latent_semantics.csv'
+
+        latent_semantics_file_path = os.path.join(output_folder, latent_semantics_file_name)
+        if os.path.exists(latent_semantics_file_path):
+            print('Reading stored csv for latent semantics')
+            latent_semantics = np.matrix(genfromtxt(latent_semantics_file_path, delimiter=','))
+        else:
+            dim_red_technique = dim_red_technique.lower()
+            left_factor_matrix, right_factor_matrix = perform_dim_red(dim_red_technique, image_features, k)
+            latent_semantics = right_factor_matrix
+            store_array_as_csv(latent_semantics, output_folder, latent_semantics_file_name)
 
         #Storing into cache
-        cache_for_input_images[input_folder_path] = {'images_with_attributes': images_with_attributes,
+        cache_for_input_images[key] = {'images_with_attributes': images_with_attributes,
                                                      'images': images,
                                                      'image_features': image_features,
-                                                     'latent_semantics_file_path': os.path.join(output_folder, latent_semantics_file_name)}
+                                                     'latent_semantics_file_path': latent_semantics_file_path}
 
     test_images_with_attributes = get_images_and_attributes_from_folder(test_folder_path)
     test_images = get_image_arr_from_dict(test_images_with_attributes)
@@ -56,7 +64,7 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
         predicted_labels, correct_labels = ppr(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name)
 
-    print_classification_stats(predicted_labels, correct_labels) #print false positive rate and false negative rate
+    #print_classification_stats(predicted_labels, correct_labels) #print false positive rate and false negative rate
 
 def decision_tree(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name):
@@ -84,10 +92,21 @@ def svm(latent_semantics, images_with_attributes, image_features,
 def ppr(latent_semantics, images_with_attributes, image_features,
                                          test_images_with_attributes, test_image_features, label_name):
     print('Personalized Page Rank Classifier')
-    predicted_labels, correct_labels = perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
-                                         test_images_with_attributes, test_image_features, label_name)
+
+    predicted_labels = None
+    correct_labels = None
+
+    #predicted_labels, correct_labels = perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
+                                         #test_images_with_attributes, test_image_features, label_name)
     return predicted_labels, correct_labels
 
+def print_classification_stats(predicted_labels, correct_labels) :
+    correct_labels_count = 0
+    for i in range(len(predicted_labels)):
+        print('True Label - ' + correct_labels + '      Assigned Label - ' + predicted_labels)
+        if correct_labels == predicted_labels:
+            correct_labels_count += 1
+    print('Accuracy for Task 1 is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,
             folder_path='input_images', output_folder='output',

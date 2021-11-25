@@ -17,7 +17,7 @@ def perform_ppr_classification(latent_semantics, images_with_attributes, image_f
         num_similar_nodes_to_form_graph = 15
 
     predicted_labels = run_ppr(image_objects, test_image_objects, label_name, num_nodes_to_consider_for_classifying, num_similar_nodes_to_form_graph)
-    correct_labels =
+    correct_labels = None
 
     return predicted_labels, correct_labels
 
