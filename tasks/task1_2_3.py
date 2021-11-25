@@ -2,13 +2,7 @@ from .input_output import *
 from .features import *
 from .dim_red import perform_dim_red
 from numpy import genfromtxt
-
-from .weight_matrices_calc import get_subject_weight_matrix, get_type_weight_matrix
-from .pca import compute_pca
-from .svd import compute_svd
-from .kmeans import kmeans
-from .lda import LDA
-
+from ppr_task import perform_ppr_classification
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
 latent_semantics_file_id = 0
@@ -75,6 +69,8 @@ def svm(latent_semantics, images_with_attributes, image_features,
 def ppr(latent_semantics, images_with_attributes, image_features,
                                          test_images_with_attributes, test_image_features, label_name):
     print('Personalized Page Rank Classifier')
+    perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
+                                         test_images_with_attributes, test_image_features, label_name)
 
 
 """
