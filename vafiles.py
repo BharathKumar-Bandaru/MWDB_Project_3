@@ -1,4 +1,7 @@
 import math
+
+from cv2 import imread
+
 from input_output import get_images_and_attributes_from_folder
 from Feature_models.ColorMoments import compute_color_moment_of_image
 from input_output import save_images_by_clearing_folder
@@ -144,19 +147,21 @@ def simple_search_algorithm(feature_vectors, vq, t, approximations, partition_po
 
 
     d = float('inf')
+    idx = 0
     for i in range(0, len(feature_vectors)):
         li = compute_lower_bound(feature_vectors[i], vq, partition_points)
         print("Li value is: ",li)
         print("d value of is: ",d)
-        if li < d:
+        if li < d or idx < t:
             d = compute_euclidean(vq, feature_vectors[i])
+            idx+=1
             ans, dst = Candidate(d, i, dst, ans, t)
-    print("Image ids: ")
-    for a in ans:
-        print(a)
+
     return ans, dst
 
-
+def readImage(filename):
+    image = imread(filename, as_gray=True)
+    return image
 #Test function
 #read data from folder path. Output is a list of dictionaries
 image_data = get_images_and_attributes_from_folder("Dataset")
@@ -206,12 +211,12 @@ approx_set = set(approximations)
 
 #call simple search algo
 
-query_vector = feature_vetors[1500]
+query_vector = feature_vetors[2000]
 t = 10
 ans, dst = simple_search_algorithm(feature_vetors, query_vector, t, approximations, overall_partition_list)
 print("Output vectors: ")
 output = []
-output.append((images[1500], "input-"+file_names[1500]))
+output.append((images[2000], "input-"+file_names[2000]))
 for a in ans:
     print(a)
     output.append((images[a], file_names[a]))
