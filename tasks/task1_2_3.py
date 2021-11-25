@@ -46,6 +46,28 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
     test_images = get_image_arr_from_dict(test_images_with_attributes)
     test_image_features = get_flattened_features_for_images(test_images, feature_model)
 
+    classifier = classifier.lower()
+    if classifier == 'decision-tree':
+        perform_decision_tree_classification(latent_semantics, images_with_attributes, image_features,
+                                             test_images_with_attributes, test_image_features)
+    elif classifier == 'svm':
+        perform_svm_classification(latent_semantics, images_with_attributes, image_features,
+                                             test_images_with_attributes, test_image_features)
+    elif classifier == 'ppr':
+        perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
+                                             test_images_with_attributes, test_image_features)
+
+def perform_decision_tree_classification(latent_semantics, images_with_attributes, image_features,
+                                             test_images_with_attributes, test_image_features):
+    print('Decision Tree Classifier')
+
+def perform_svm_classification(latent_semantics, images_with_attributes, image_features,
+                                         test_images_with_attributes, test_image_features):
+    print('Support Vector Machine Classifier')
+
+def perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
+                                         test_images_with_attributes, test_image_features):
+    print('Personalized Page Rank Classifier')
 
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,
