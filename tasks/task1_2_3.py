@@ -56,7 +56,7 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
         predicted_labels, correct_labels = ppr(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name)
 
-    compute_and_print_stats(predicted_labels, correct_labels) #print false positive rate and false negative rate
+    print_classification_stats(predicted_labels, correct_labels) #print false positive rate and false negative rate
 
 def decision_tree(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name):
