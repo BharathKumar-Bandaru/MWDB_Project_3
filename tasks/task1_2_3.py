@@ -14,7 +14,7 @@ cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'im
 latent_semantics_file_id = 0
 
 # Entry for tasks 1,2, and 3
-def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_path, classifier, label_type,
+def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_path, classifier,
                dim_red_technique = 'svd', output_folder = 'output', latent_semantics_file_name = None,
                use_cached_input_images = True):
 
@@ -46,28 +46,36 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
     test_images = get_image_arr_from_dict(test_images_with_attributes)
     test_image_features = get_flattened_features_for_images(test_images, feature_model)
 
+    if task_number == 1:
+        label_name = 'type'
+    elif task_number == 2:
+        label_name = 'subject_id'
+    else:
+        label_name = 'image_id'
+
     classifier = classifier.lower()
     if classifier == 'decision-tree':
-        perform_decision_tree_classification(latent_semantics, images_with_attributes, image_features,
-                                             test_images_with_attributes, test_image_features)
+        decision_tree(latent_semantics, images_with_attributes, image_features,
+                                             test_images_with_attributes, test_image_features, label_name)
     elif classifier == 'svm':
-        perform_svm_classification(latent_semantics, images_with_attributes, image_features,
-                                             test_images_with_attributes, test_image_features)
+        svm(latent_semantics, images_with_attributes, image_features,
+                                             test_images_with_attributes, test_image_features, label_name)
     elif classifier == 'ppr':
-        perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
-                                             test_images_with_attributes, test_image_features)
+        ppr(latent_semantics, images_with_attributes, image_features,
+                                             test_images_with_attributes, test_image_features, label_name)
 
-def perform_decision_tree_classification(latent_semantics, images_with_attributes, image_features,
-                                             test_images_with_attributes, test_image_features):
+def decision_tree(latent_semantics, images_with_attributes, image_features,
+                                             test_images_with_attributes, test_image_features, label_name):
     print('Decision Tree Classifier')
 
-def perform_svm_classification(latent_semantics, images_with_attributes, image_features,
-                                         test_images_with_attributes, test_image_features):
+def svm(latent_semantics, images_with_attributes, image_features,
+                                         test_images_with_attributes, test_image_features, label_name):
     print('Support Vector Machine Classifier')
 
-def perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
-                                         test_images_with_attributes, test_image_features):
+def ppr(latent_semantics, images_with_attributes, image_features,
+                                         test_images_with_attributes, test_image_features, label_name):
     print('Personalized Page Rank Classifier')
+
 
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,

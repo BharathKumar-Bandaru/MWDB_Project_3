@@ -93,6 +93,8 @@ def run_ppr(image_objects, test_image_objects, classification_label = 'type', nu
 	print(labels)
 	print('\n-----------------------------------------------------------')
 	return labels
+
+
 task(input_folder_path='Dataset', test_folder_path='Test_Dataset', feature_model='elbp', k=100,
 						 label_name='type',
 						 dim_red_technique='svd')
