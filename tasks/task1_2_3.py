@@ -47,29 +47,46 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
 
     classifier = classifier.lower()
     if classifier == 'decision-tree':
-        decision_tree(latent_semantics, images_with_attributes, image_features,
+        predicted_labels, correct_labels = decision_tree(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name)
     elif classifier == 'svm':
-        svm(latent_semantics, images_with_attributes, image_features,
+        predicted_labels, correct_labels = svm(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name)
     elif classifier == 'ppr':
-        ppr(latent_semantics, images_with_attributes, image_features,
+        predicted_labels, correct_labels = ppr(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name)
+
+    compute_and_print_stats(predicted_labels, correct_labels) #print false positive rate and false negative rate
 
 def decision_tree(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name):
     print('Decision Tree Classifier')
 
+    """
+    Write Decision Tree code here
+    """
+
+    predicted_labels = None
+    correct_labels = None
+    return predicted_labels, correct_labels
+
 def svm(latent_semantics, images_with_attributes, image_features,
                                          test_images_with_attributes, test_image_features, label_name):
     print('Support Vector Machine Classifier')
+    """
+        Write SVM code here
+    """
+    predicted_labels = None
+    correct_labels = None
+    return predicted_labels, correct_labels
+
 
 def ppr(latent_semantics, images_with_attributes, image_features,
                                          test_images_with_attributes, test_image_features, label_name):
     print('Personalized Page Rank Classifier')
-    perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
+    predicted_labels, correct_labels = perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
                                          test_images_with_attributes, test_image_features, label_name)
-
+    return predicted_labels, correct_labels
 
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,
