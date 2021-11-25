@@ -41,10 +41,5 @@ def ppr_classifier(input_image_objects, test_image_object):
 	seed_node_index = len(image_filenames) - 1
 	seed_nodes = [seed_node_index]
 
-
-
-
-
-
 supply_inputs_to_ppr(input_folder_path = 'Dataset', test_folder_path = 'Dataset', feature_model = 'elbp', k = 100, label_name = 'type',
 	dim_red_technique = 'svd')

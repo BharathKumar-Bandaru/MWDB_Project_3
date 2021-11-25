@@ -24,7 +24,7 @@ def process_data(images_data, filter_type = 'type'):
     labels = []
     for each in images_data:
         data_values.append(each['image'])
-        label = class_map[each['type']] if filter_type == "type" else each[filter_type]
+        label = class_map[each['type']] if filter_type == "type" else int(each[filter_type])
         labels.append(label)
     return data_values, labels
 
