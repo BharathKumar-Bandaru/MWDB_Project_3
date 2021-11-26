@@ -3,6 +3,7 @@ from .features import *
 from .dim_red import perform_dim_red
 from numpy import genfromtxt
 from .ppr_task import perform_ppr_classification
+from sklearn.metrics import confusion_matrix, classification_report #for reporting the model performance
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
 
@@ -107,6 +108,19 @@ def print_classification_stats(predicted_labels, correct_labels) :
         if correct_labels[i] == predicted_labels[i]:
             correct_labels_count += 1
     print('Accuracy for Task 1 is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
+
+    CM = confusion_matrix(correct_labels, predicted_labels)
+    print(CM)
+    TN = CM[0][0]
+    FN = CM[1][0]
+    TP = CM[1][1]
+    FP = CM[0][1]
+    FPR = FP / (FP + TN)
+    FNR = FN / (TP + FN)
+    print('False Positive rate - ' + str(FPR))
+    print('False Negative rate - ' + str(FNR))
+    #print(classification_report(correct_labels, predicted_labels))
+
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,
             folder_path='input_images', output_folder='output',
