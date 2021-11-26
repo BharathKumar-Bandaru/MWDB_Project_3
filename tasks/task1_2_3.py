@@ -2,9 +2,12 @@ from .input_output import *
 from .features import *
 from .dim_red import perform_dim_red
 from numpy import genfromtxt
+from .custom_svm import *
+from .svm import *
 from .ppr_task import perform_ppr_classification
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
+svm_models = {}
 
 # Entry for tasks 1,2, and 3
 def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_path, classifier,
@@ -57,9 +60,15 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
     if classifier == 'decision-tree':
         predicted_labels, correct_labels = decision_tree(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name)
+
     elif classifier == 'svm':
         predicted_labels, correct_labels = svm(latent_semantics, images_with_attributes, image_features,
-                                             test_images_with_attributes, test_image_features, label_name)
+                                             test_images_with_attributes, test_image_features, label_name, key)
+        print_classification_stats(predicted_labels, correct_labels)
+
+        # string_ = f"{key}: {np.sum(predicted_labels == correct_labels) / len(predicted_labels) * 100:.2f}, {test_folder_path}_Correct: {np.sum(predicted_labels == correct_labels)}."
+        # return string_
+
     elif classifier == 'ppr':
         predicted_labels, correct_labels = ppr(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name)
@@ -79,14 +88,36 @@ def decision_tree(latent_semantics, images_with_attributes, image_features,
     return predicted_labels, correct_labels
 
 def svm(latent_semantics, images_with_attributes, image_features,
-                                         test_images_with_attributes, test_image_features, label_name):
+                                         test_images_with_attributes, test_image_features, label_name, key):
     print('Support Vector Machine Classifier')
     """
         Write SVM code here
     """
-    predicted_labels = None
-    correct_labels = None
-    return predicted_labels, correct_labels
+    correct_labels = process_labels(test_images_with_attributes, label_name)
+    image_features = np.array(image_features)
+    test_image_features = np.array(test_image_features)
+
+    # Pre processing inputs
+    mean = np.mean(image_features, axis=0)
+    image_features -= mean
+    test_image_features -= mean
+
+    X_data = np.array(np.matmul(image_features, latent_semantics.transpose()))
+    X_test = np.array(np.matmul(test_image_features, latent_semantics.transpose()))
+
+    if key not in svm_models.keys():
+        svm_ = SVM_custom(C=1, tol=0.01, max_iter=100, random_state=0, verbose=1)
+        # svm_ = linearSVM()
+        original_labels = np.array(process_labels(images_with_attributes, label_name))
+        svm_.train(X_data, original_labels)
+        svm_models[key] = svm_
+        print("Stored the model")
+    else:
+        print("Using from cache")
+        svm_ = svm_models[key]
+    # Predict the labels
+    predicted_labels = svm_.predict(X_test)
+    return np.array(predicted_labels), np.array(correct_labels)
 
 
 def ppr(latent_semantics, images_with_attributes, image_features,
@@ -103,10 +134,11 @@ def ppr(latent_semantics, images_with_attributes, image_features,
 def print_classification_stats(predicted_labels, correct_labels) :
     correct_labels_count = 0
     for i in range(len(predicted_labels)):
-        print('True Label - ' + correct_labels + '      Assigned Label - ' + predicted_labels)
-        if correct_labels == predicted_labels:
+        # print(f'{i+1}: True Label -  {correct_labels[i]}, Assigned Label - {predicted_labels[i]}')
+        if correct_labels[i] == predicted_labels[i]:
             correct_labels_count += 1
-    print('Accuracy for Task 1 is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
+    # print(f"Correct predicted labels: {correct_labels_count}")
+    print(f'Accuracy for Task 1 is {correct_labels_count * 100 / len(predicted_labels):.3f}%')
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,
             folder_path='input_images', output_folder='output',
