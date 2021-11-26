@@ -3,7 +3,7 @@ from .features import *
 from .dim_red import perform_dim_red
 from numpy import genfromtxt
 from .ppr_task import perform_ppr_classification
-from sklearn.metrics import confusion_matrix, classification_report, plot_confusion_matrix #for reporting the model performance
+from sklearn.metrics import confusion_matrix #for reporting the model performance
 import pandas as pd
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
