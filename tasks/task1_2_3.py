@@ -64,7 +64,7 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
         predicted_labels, correct_labels = ppr(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name)
 
-    #print_classification_stats(predicted_labels, correct_labels) #print false positive rate and false negative rate
+    print_classification_stats(predicted_labels, correct_labels) #print false positive rate and false negative rate
 
 def decision_tree(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name):
@@ -93,18 +93,18 @@ def ppr(latent_semantics, images_with_attributes, image_features,
                                          test_images_with_attributes, test_image_features, label_name):
     print('Personalized Page Rank Classifier')
 
-    predicted_labels = None
-    correct_labels = None
+    #predicted_labels = None
+    #correct_labels = None
 
-    #predicted_labels, correct_labels = perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
-                                         #test_images_with_attributes, test_image_features, label_name)
+    predicted_labels, correct_labels = perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
+                                         test_images_with_attributes, test_image_features, label_name)
     return predicted_labels, correct_labels
 
 def print_classification_stats(predicted_labels, correct_labels) :
     correct_labels_count = 0
     for i in range(len(predicted_labels)):
-        print('True Label - ' + correct_labels + '      Assigned Label - ' + predicted_labels)
-        if correct_labels == predicted_labels:
+        print('True Label - ' + str(correct_labels[i]) + '      Assigned Label - ' + str(predicted_labels[i]))
+        if correct_labels[i] == predicted_labels[i]:
             correct_labels_count += 1
     print('Accuracy for Task 1 is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
 """
