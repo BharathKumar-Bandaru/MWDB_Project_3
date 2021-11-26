@@ -5,6 +5,7 @@ from numpy import genfromtxt
 from .custom_svm import *
 from .svm import *
 from .ppr_task import perform_ppr_classification
+from sklearn.metrics import confusion_matrix, classification_report #for reporting the model performance
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
 svm_models = {}
@@ -73,7 +74,7 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
         predicted_labels, correct_labels = ppr(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name)
 
-    #print_classification_stats(predicted_labels, correct_labels) #print false positive rate and false negative rate
+    print_classification_stats(predicted_labels, correct_labels) #print false positive rate and false negative rate
 
 def decision_tree(latent_semantics, images_with_attributes, image_features,
                                              test_images_with_attributes, test_image_features, label_name):
@@ -124,11 +125,11 @@ def ppr(latent_semantics, images_with_attributes, image_features,
                                          test_images_with_attributes, test_image_features, label_name):
     print('Personalized Page Rank Classifier')
 
-    predicted_labels = None
-    correct_labels = None
+    #predicted_labels = None
+    #correct_labels = None
 
-    #predicted_labels, correct_labels = perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
-                                         #test_images_with_attributes, test_image_features, label_name)
+    predicted_labels, correct_labels = perform_ppr_classification(latent_semantics, images_with_attributes, image_features,
+                                         test_images_with_attributes, test_image_features, label_name)
     return predicted_labels, correct_labels
 
 def print_classification_stats(predicted_labels, correct_labels) :
@@ -137,8 +138,20 @@ def print_classification_stats(predicted_labels, correct_labels) :
         # print(f'{i+1}: True Label -  {correct_labels[i]}, Assigned Label - {predicted_labels[i]}')
         if correct_labels[i] == predicted_labels[i]:
             correct_labels_count += 1
-    # print(f"Correct predicted labels: {correct_labels_count}")
-    print(f'Accuracy for Task 1 is {correct_labels_count * 100 / len(predicted_labels):.3f}%')
+    print('Accuracy for Task 1 is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
+
+    CM = confusion_matrix(correct_labels, predicted_labels)
+    print(CM)
+    TN = CM[0][0]
+    FN = CM[1][0]
+    TP = CM[1][1]
+    FP = CM[0][1]
+    FPR = FP / (FP + TN)
+    FNR = FN / (TP + FN)
+    print('False Positive rate - ' + str(FPR))
+    print('False Negative rate - ' + str(FNR))
+    #print(classification_report(correct_labels, predicted_labels))
+
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,
             folder_path='input_images', output_folder='output',
