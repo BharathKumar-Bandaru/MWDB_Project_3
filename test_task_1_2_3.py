@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import icecream as ic
 
 from tasks.task1_2_3 import task_1_2_3
 fm = ['cm', 'elbp', 'hog']
@@ -16,8 +15,7 @@ for i in fm:
                use_cached_input_images = True))
             print(acc[-1])
 
-# print(np.array(acc))
-ic.ic(acc)
+print(np.array(acc))
 
 # task_1_2_3(task_number = 1, input_folder_path = 'Dataset', feature_model = 'cm', k =10, test_folder_path = '3000', classifier =  'svm',
 #                dim_red_technique = 'pca', output_folder = 'output', latent_semantics_file_name = None,
