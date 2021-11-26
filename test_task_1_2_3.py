@@ -1,7 +1,7 @@
 import os
 
 from tasks.task1_2_3 import task_1_2_3
-task_1_2_3(task_number = 2, input_folder_path = 'Dataset', feature_model = 'elbp', k =24, test_folder_path = 'Test_Dataset', classifier =  'ppr',
+task_1_2_3(task_number = 2, input_folder_path = 'Dataset_100', feature_model = 'elbp', k =27, test_folder_path = 'Test_Dataset', classifier =  'ppr',
                dim_red_technique = 'pca', output_folder = 'output', latent_semantics_file_name = None,
                use_cached_input_images = True)
 
