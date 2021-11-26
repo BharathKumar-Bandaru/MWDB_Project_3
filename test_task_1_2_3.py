@@ -17,7 +17,10 @@ for i in fm:
 
 print(np.array(acc))
 
-# task_1_2_3(task_number = 1, input_folder_path = 'Dataset', feature_model = 'cm', k =10, test_folder_path = '3000', classifier =  'svm',
+
+
+
+# task_1_2_3(task_number = 1, input_folder_path = 'Dataset', feature_model = 'elbp', k =10, test_folder_path = '100', classifier =  'svm',
 #                dim_red_technique = 'pca', output_folder = 'output', latent_semantics_file_name = None,
 #                use_cached_input_images = True)
 #

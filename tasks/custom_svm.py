@@ -16,7 +16,7 @@ def projection(v, z=1):
     return w
 
 
-class SVM_custom(BaseEstimator, ClassifierMixin):
+class SVM_custom():
     def __init__(self, C=1, max_iter=50, tol=0.05,
                  random_state=None, verbose=0):
         self.C = C
@@ -26,7 +26,7 @@ class SVM_custom(BaseEstimator, ClassifierMixin):
         self.verbose = verbose
 
     def gradient(self, X, y, i):
-        g = (np.dot(X[i], self.coef.T) + 1)
+        g = (np.dot(X[i], self.W.T) + 1)
         g[y[i]] -= 1
         return g
 
@@ -56,8 +56,9 @@ class SVM_custom(BaseEstimator, ClassifierMixin):
         y = self._label_encoder.fit_transform(y)
 
         classes_unique = len(self._label_encoder.classes_)
+        self.classes_num = np.unique(y).shape[0]
         self.dcoef = np.zeros((classes_unique, n_samples), dtype=np.float64)
-        self.coef = np.zeros((classes_unique, n_features))
+        self.W = np.zeros((classes_unique, n_features))
 
         norm_values = np.sqrt(np.sum(X ** 2, axis=1))
 
@@ -83,7 +84,7 @@ class SVM_custom(BaseEstimator, ClassifierMixin):
 
                 delta = self.subproblem(g, y, norm_values, i)
 
-                self.coef += (delta * X[i][:, np.newaxis]).T
+                self.W += (delta * X[i][:, np.newaxis]).T
                 self.dcoef[:, i] += delta
 
             if it == 0:
@@ -95,6 +96,10 @@ class SVM_custom(BaseEstimator, ClassifierMixin):
         return self
 
     def predict(self, X):
-        decision = np.dot(X, self.coef.T)
+        decision = np.dot(X, self.W.T)
         pred = decision.argmax(axis=1)
         return self._label_encoder.inverse_transform(pred)
+
+    def get_weights(self, X):
+        decision = np.dot(X, self.W.T)
+        return decision[:, 1:self.classes_num + 1]

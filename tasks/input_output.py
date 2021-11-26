@@ -163,4 +163,4 @@ def process_labels(images_data, filter_type = 'type'):
     for each in images_data:
         label = class_map[each['type']] if filter_type == "type" else int(each[filter_type])
         labels.append(label)
-    return labels
+    return np.array(labels)

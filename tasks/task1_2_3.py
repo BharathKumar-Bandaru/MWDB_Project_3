@@ -108,7 +108,7 @@ def svm(latent_semantics, images_with_attributes, image_features,
     if key not in svm_models.keys():
         svm_ = SVM_custom(C=1, tol=0.01, max_iter=100, random_state=0, verbose=1)
         # svm_ = linearSVM()
-        original_labels = np.array(process_labels(images_with_attributes, label_name))
+        original_labels = process_labels(images_with_attributes, label_name)
         svm_.train(X_data, original_labels)
         svm_models[key] = svm_
         print("Stored the model")
