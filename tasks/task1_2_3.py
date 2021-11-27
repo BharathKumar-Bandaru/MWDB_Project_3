@@ -7,6 +7,8 @@ from .svm import *
 from .ppr_task import perform_ppr_classification
 from tasks.decision_trees import *
 from sklearn.metrics import confusion_matrix, classification_report #for reporting the model performance
+from sklearn.metrics import confusion_matrix #for reporting the model performance
+import pandas as pd
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
 svm_models = {}
@@ -176,17 +178,24 @@ def print_classification_stats(predicted_labels, correct_labels) :
             correct_labels_count += 1
     print('Accuracy for Task 1 is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
 
-    # CM = confusion_matrix(correct_labels, predicted_labels)
-    # print(CM)
-    # TN = CM[0][0]
-    # FN = CM[1][0]
-    # TP = CM[1][1]
-    # FP = CM[0][1]
-    # FPR = FP / (FP + TN)
-    # FNR = FN / (TP + FN)
-    # print('False Positive rate - ' + str(FPR))
-    # print('False Negative rate - ' + str(FNR))
-    #print(classification_report(correct_labels, predicted_labels))
+    """CM = confusion_matrix(correct_labels, predicted_labels, target_classes = predicted_labels)
+    print(CM)
+    TN = CM[0][0]
+    FN = CM[1][0]
+    TP = CM[1][1]
+    FP = CM[0][1]
+    FPR = FP / (FP + TN)
+    FNR = FN / (TP + FN)
+    print('False Positive rate - ' + str(FPR))
+    print('False Negative rate - ' + str(FNR))"""
+
+    unique_label = np.unique([correct_labels, predicted_labels])
+    cmtx = pd.DataFrame(
+        confusion_matrix(correct_labels, predicted_labels, labels=unique_label),
+        index=['true:{:}'.format(x) for x in unique_label],
+        columns=['pred:{:}'.format(x) for x in unique_label]
+    )
+    print(cmtx)
 
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,
