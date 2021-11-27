@@ -39,3 +39,6 @@ class LocalitySensitiveHashing:
 
     def get_hash_buckets_per_layer(self):
         return self.hash_buckets_per_layer
+
+    def get_similar_objects(self, query_image_obj, num_similar_images_to_retrieve):
+        hash_codes = self.get_hash_codes_for_object(query_image_obj.features)
