@@ -1,3 +1,4 @@
+import numpy as np
 
 class LocalitySensitiveHashing:
 
@@ -9,13 +10,13 @@ class LocalitySensitiveHashing:
         self.random_planes = [np.random.randn(self.num_hashes_per_layer, number_of_features)
                               for i in range(self.num_layers)]
         self.layer_buckets = [{} for i in range(self.num_layers)]
-        create_index_structure_with_input_vectors()
+        self.create_index_structure_with_input_vectors()
 
     def create_index_structure_with_input_vectors(self):
         input_vectors = self.input_vectors
         layer_buckets = self.layer_buckets
         for input_vector in input_vectors:
-            hash_codes = get_hash_codes_for_object(input_vector)
+            hash_codes = self.get_hash_codes_for_object(input_vector)
             for i in range(self.num_layers):
                 buckets_dict = layer_buckets[i]
                 hash_code = hash_codes[i]
@@ -27,7 +28,7 @@ class LocalitySensitiveHashing:
         hash_codes = []
         for layer_no in range(self.num_layers):
             hash_code = ""
-            for plane in self.random_planes:
+            for plane in self.random_planes[layer_no]:
                 dot_product = input_vector.dot(plane)
                 if dot_product < 0:
                     hash_code += '0'
