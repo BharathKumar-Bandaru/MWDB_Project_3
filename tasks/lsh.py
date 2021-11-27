@@ -37,5 +37,8 @@ class LocalitySensitiveHashing:
             hash_codes.append(hash_code)
         return hash_codes
 
+    def retrieve_objects_in_bucket(self, layer_num, hashcode):
+        return self.hash_buckets_per_layer[layer_num][hashcode]
+
     def get_hash_buckets_per_layer(self):
         return self.hash_buckets_per_layer
