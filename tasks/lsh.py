@@ -2,27 +2,27 @@ import numpy as np
 
 class LocalitySensitiveHashing:
 
-    def __init__(self, num_layers, num_hashes_per_layer, input_vectors):
+    def __init__(self, num_layers, num_hashes_per_layer, image_objects):
         self.num_layers = num_layers
         self.num_hashes_per_layer = num_hashes_per_layer
-        self.input_vectors = input_vectors
-        number_of_features = len(input_vectors[0])
+        self.image_objects = image_objects
+        number_of_features = len(image_objects[0].features)
         self.random_planes = [np.random.randn(self.num_hashes_per_layer, number_of_features)
                               for i in range(self.num_layers)]
         self.hash_buckets_per_layer = [{} for i in range(self.num_layers)]
         self.create_index_structure_with_input_vectors()
 
     def create_index_structure_with_input_vectors(self):
-        input_vectors = self.input_vectors
         hash_buckets_per_layer = self.hash_buckets_per_layer
-        for input_vector in input_vectors:
+        for image_obj in self.image_objects:
+            input_vector = image_obj.features
             hash_codes = self.get_hash_codes_for_object(input_vector)
             for i in range(self.num_layers):
                 buckets_dict = hash_buckets_per_layer[i]
                 hash_code = hash_codes[i]
                 if hash_code not in buckets_dict:
                     buckets_dict[hash_code] = []
-                buckets_dict[hash_code].append(input_vector)
+                buckets_dict[hash_code].append(image_obj)
 
     def get_hash_codes_for_object(self, input_vector):
         hash_codes = []
