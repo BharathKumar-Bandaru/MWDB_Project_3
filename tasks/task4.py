@@ -14,6 +14,7 @@ def task4(input_folder, feature_model, num_layers, num_hashes_per_layer, query_i
 
     result_images = lsh_obj.get_similar_objects(query_image_obj, num_similar_images_to_retrieve)
     image_file_name_tuple_list = [(image_obj.image_arr, image_obj.filename) for image_obj in result_images]
+    image_file_name_tuple_list.append((query_image_obj.image_arr, f'0_query_{query_image_obj.filename}'))
     save_images_by_clearing_folder(image_file_name_tuple_list, output_folder_path)
     print(f'LSH result images are saved in {output_folder_path}')
 
