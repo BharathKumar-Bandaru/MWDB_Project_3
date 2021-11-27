@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.spatial import distance
 
 class LocalitySensitiveHashing:
 
@@ -44,5 +45,14 @@ class LocalitySensitiveHashing:
     def get_hash_buckets_per_layer(self):
         return self.hash_buckets_per_layer
 
+    def compute_distance(self, query_image_features, hash_bucket_image_features):
+        return distance.euclidean(query_image_features, hash_bucket_image_features)
+
     def get_similar_objects(self, query_image_obj, num_similar_images_to_retrieve):
         hash_codes = self.get_hash_codes_for_object(query_image_obj.features)
+        image_set = set()
+        for idx, hash_code in enumerate(hash_codes):
+            images = self.retrieve_objects_in_bucket(idx, hash_code)
+            image_set.update(images)
+
+
