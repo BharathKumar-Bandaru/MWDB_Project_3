@@ -9,10 +9,12 @@ from tasks.decision_trees import *
 from sklearn.metrics import confusion_matrix, classification_report #for reporting the model performance
 from sklearn.metrics import confusion_matrix #for reporting the model performance
 import pandas as pd
+from cache import get_cache_for_input_images
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
 svm_models = {}
 decision_tree_models = {}
+cache_for_input_images = get_cache_for_input_images() #{input_folder_path}_{feature_model}_{dim_red_technique}_{k}, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
 
 # Entry for tasks 1,2, and 3
 def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_path, classifier,
