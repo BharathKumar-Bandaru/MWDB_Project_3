@@ -17,20 +17,11 @@ def task4(input_folder, feature_model, num_layers, num_hashes_per_layer, query_i
     image_file_name_tuple_list.append((query_image_obj.image_arr, f'0_query_{query_image_obj.filename}'))
     for i in range(len(result_images)):
         image_obj = result_images[i]
-        file_name = f'{i}_{image_obj.filename}'
+        file_name = f'{i+1}_{image_obj.filename}'
         image_file_name_tuple_list.append((image_obj.image_arr, file_name))
     save_images_by_clearing_folder(image_file_name_tuple_list, output_folder_path)
     print(f'LSH result images are saved in {output_folder_path}')
-
-    ##Testing##
-    hash_buckets_per_layer = lsh_obj.get_hash_buckets_per_layer()
-    for i in range(len(hash_buckets_per_layer)):
-        print('-----------')
-        print(f'Layer {i+1}')
-        hash_buckets_dict = hash_buckets_per_layer[i]
-        for key in hash_buckets_dict:
-            print(key, len(hash_buckets_dict[key]))
-
+    lsh_obj.print_index_structure_stats()
 
 
 
