@@ -20,8 +20,13 @@ def task4(input_folder, feature_model, num_layers, num_hashes_per_layer, query_i
         file_name = f'{i+1}_{image_obj.filename}'
         image_file_name_tuple_list.append((image_obj.image_arr, file_name))
     save_images_by_clearing_folder(image_file_name_tuple_list, output_folder_path)
+    # for i in range(int(len(result_images)/5), len(result_images)):
+    #     image_obj = result_images[i]
+    #     file_name = f'{i + 1}_{image_obj.filename}'
+    #     image_file_name_tuple_list.append((image_obj.image_arr, file_name))
     print(f'LSH result images are saved in {output_folder_path}')
     lsh_obj.print_index_structure_stats()
+    return result_images
 
 
 

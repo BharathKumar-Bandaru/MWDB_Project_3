@@ -9,7 +9,7 @@ from tasks.decision_trees import *
 from sklearn.metrics import confusion_matrix, classification_report #for reporting the model performance
 from sklearn.metrics import confusion_matrix #for reporting the model performance
 import pandas as pd
-from cache import get_cache_for_input_images
+from tasks.cache import get_cache_for_input_images
 
 cache_for_input_images = {} #input_folder_path, {'images_with_attributes': , 'images':, 'image_features':, 'latent_semantics_file_path': }
 svm_models = {}
@@ -70,13 +70,11 @@ def task_1_2_3(task_number, input_folder_path, feature_model, k, test_folder_pat
     classifier = classifier.lower()
     if classifier == 'decision-tree':
         predicted_labels, correct_labels = decision_tree(latent_semantics, images_with_attributes, image_features,
-                                             test_images_with_attributes, test_image_features, label_name, key, k)
-        print_classification_stats(predicted_labels, correct_labels)
+                                             test_images_with_attributes, test_image_features, label_name, f'{key}_{task_number}', k)
 
     elif classifier == 'svm':
         predicted_labels, correct_labels = svm(latent_semantics, images_with_attributes, image_features,
-                                             test_images_with_attributes, test_image_features, label_name, key, k)
-        print_classification_stats(predicted_labels, correct_labels)
+                                             test_images_with_attributes, test_image_features, label_name, f'{key}_{task_number}', k)
 
         # string_ = f"{key}: {np.sum(predicted_labels == correct_labels) / len(predicted_labels) * 100:.2f}, {test_folder_path}_Correct: {np.sum(predicted_labels == correct_labels)}."
         # return string_
@@ -178,7 +176,7 @@ def print_classification_stats(predicted_labels, correct_labels) :
         # print(f'{i+1}: True Label -  {correct_labels[i]}, Assigned Label - {predicted_labels[i]}')
         if correct_labels[i] == predicted_labels[i]:
             correct_labels_count += 1
-    print('Accuracy for Task 1 is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
+    print('Accuracy is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
 
     """CM = confusion_matrix(correct_labels, predicted_labels, target_classes = predicted_labels)
     print(CM)
@@ -197,7 +195,7 @@ def print_classification_stats(predicted_labels, correct_labels) :
         index=['true:{:}'.format(x) for x in unique_label],
         columns=['pred:{:}'.format(x) for x in unique_label]
     )
-    print(cmtx)
+    print(cmtx.to_string())
 
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,

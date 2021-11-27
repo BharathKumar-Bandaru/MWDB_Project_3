@@ -50,7 +50,7 @@ if __name__ == "__main__":
             print(f"If cm is selected then make use value of k is less than 64.")
             print(f"The entered values are Feature: {f}, filter: {task_type_map[task_number]}, k: {k}, dimensionality "
                   f"reduction: {dr}, classifier: {classifier}")
-            task_1_2_3(task_number=1, input_folder_path='Dataset', feature_model=f, k=k, test_folder_path=test_path,
+            task_1_2_3(task_number=task_number, input_folder_path=data_path, feature_model=f, k=k, test_folder_path=test_path,
                        classifier=classifier,
                        dim_red_technique=dr, output_folder='output', latent_semantics_file_name=None,
                        use_cached_input_images=True)
