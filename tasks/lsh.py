@@ -72,16 +72,15 @@ class LocalitySensitiveHashing:
             num_images_in_retrieved_buckets += len(images)
             objects_retrieved_in_diff_layers.append(set(images))
             self.num_buckets_searched += 1
-            #self.overall_images_considered += len(images)
+
         bucket_intersection_set = set.intersection(*objects_retrieved_in_diff_layers)
         bucket_union_set = set.union(*objects_retrieved_in_diff_layers)
 
-        print('Union and Intersection set length', len(bucket_union_set), len(bucket_intersection_set))
 
-        #self.unique_images_considered = len(bucket_intersection_set)
-        #self.overall_images_considered = len(bucket_intersection_set) * self.num_layers #elements in intersection set are present in all sets (no. of hash codes of query object = no. of layers)
+        image_object_list = list(bucket_union_set)
+        self.overall_images_considered = num_images_in_retrieved_buckets
 
-        #image_object_list = list(bucket_intersection_set)
+        """
         image_object_list = []
         if len(bucket_intersection_set) >= num_similar_images_to_retrieve:
             image_object_list = list(bucket_intersection_set)
@@ -89,20 +88,10 @@ class LocalitySensitiveHashing:
         else:
             image_object_list = list(bucket_union_set)
             self.overall_images_considered = num_images_in_retrieved_buckets
+        """
         self.unique_images_considered = len(image_object_list)
 
         image_indices_and_dist = self.get_image_indices_with_distances_sorted(query_image_obj, image_object_list)
-
-        """
-        if len(image_indices_and_dist) < num_similar_images_to_retrieve:
-            remaining_len_needed = num_similar_images_to_retrieve - len(image_indices_and_dist)
-            remaining_set = bucket_union_set - bucket_intersection_set
-            self.unique_images_considered += len(remaining_set)
-            self.overall_images_considered += len(remaining_set)
-            remaining_image_indices_and_dist = self.get_image_indices_with_distances_sorted(query_image_obj, list(remaining_set))
-            image_indices_and_dist.extend(remaining_image_indices_and_dist[:remaining_len_needed])
-        """
-
         result_image_objects = []
         n = min(num_similar_images_to_retrieve, len(image_indices_and_dist))  #returning only the available images in hash buckets
         for i in range(n):
@@ -112,6 +101,7 @@ class LocalitySensitiveHashing:
         return result_image_objects
 
     def print_index_structure_stats(self):
+        print('\n--------------')
         print('LSH Index Structure Stats:')
         hash_buckets_per_layer = self.hash_buckets_per_layer
 
