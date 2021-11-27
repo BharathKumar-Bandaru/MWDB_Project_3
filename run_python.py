@@ -1,4 +1,4 @@
-from classifiers import decision_tree_2, decision_tree
+from classifiers import decision_tree
 from csv import reader
 import numpy as np
 from skimage.io import imread
@@ -29,20 +29,21 @@ def load_csv(filename):
     return dataset
 
 
-#calculate_latent_semantics_with_type_labels("hog", 5, "pca", "type", "1000", "output")
+calculate_latent_semantics_with_type_labels("hog", 5, "pca", "image", "4000", "output")
 
 #decision_tree.read_dataset_and_construct_tree()
-dc =  decision_tree_2.DecisionTreeClassifier()
-rows = load_csv("/Users/arushigaur/Documents/masters_projects/mwdb/Mwdb_Project_3/output/left_factor_matrix_type.csv")
-images_attr = get_images_and_attributes_from_folder("100")
+#print(str(len(image_new_space)))
+dc =  decision_tree.DecisionTreeClassifier()
+rows = load_csv("/Users/arushigaur/Documents/masters_projects/mwdb/Mwdb_Project_3/output/left_factor_matrix_image.csv")
+images_attr = get_images_and_attributes_from_folder("500")
 images  = get_image_arr_from_dict(images_attr)
-labels = get_type_label_arr_from_dict(images_attr)
-#labels = get_label_arr_from_dict(images_attr, "subject_id")
+#labels = get_type_label_arr_from_dict(images_attr)
+labels = get_label_arr_from_dict(images_attr, "image_id")
 
-latent_semantics = load_csv("/Users/arushigaur/Documents/masters_projects/mwdb/Mwdb_Project_3/output/right_factor_matrix_type.csv")
+latent_semantics = load_csv("/Users/arushigaur/Documents/masters_projects/mwdb/Mwdb_Project_3/output/right_factor_matrix_image.csv")
 print("dataset read")
 root = dc.make_tree(rows)
-# print("tree formed")
+print("tree formed")
 # image = readImage("Dataset/image-jitter-23-5.png")
 # image_features = compute_features(image, "hog")
 features = []
@@ -54,7 +55,6 @@ print(str(len(latent_semantics)) + " " + str(len(latent_semantics[0])))
 
 image_new_space = np.matmul(features, np.transpose(latent_semantics))
 print("prediction: ")
-print(str(len(image_new_space)))
 count = 0
 totalCount = 0
 for i in range(len(image_new_space)):
