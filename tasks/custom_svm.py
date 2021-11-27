@@ -102,4 +102,4 @@ class SVM_custom():
 
     def get_weights(self, X):
         decision = np.dot(X, self.W.T)
-        return decision[:, 1:self.classes_num + 1]
+        return decision[:, 0:self.classes_num + 1]

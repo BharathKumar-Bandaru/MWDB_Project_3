@@ -5,6 +5,7 @@ from skimage.io import imread
 from tasks.input_output import *
 import warnings
 from tasks.task1_2_3 import *
+from tasks.task8 import *
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 np.set_printoptions(linewidth=np.inf)
@@ -53,6 +54,9 @@ if __name__ == "__main__":
                        classifier=classifier,
                        dim_red_technique=dr, output_folder='output', latent_semantics_file_name=None,
                        use_cached_input_images=True)
+
+        if 3 < task_number < 7:
+            task8(task_number)
 
         print("\nEnter the task number, to exit type e: ")
         task_number = input()
