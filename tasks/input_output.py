@@ -48,6 +48,18 @@ def get_image_objects_from_folder(folder_path):
             image_objects.append(image_obj)
     return image_objects
 
+def get_image_object_from_file(file_path):
+    image_object = None
+    if os.path.isfile(file_path):
+        filename = os.path.basename(file_path)
+        image = imread(file_path, as_gray = True)
+        image_obj = Image(filename = filename, image_arr = image)
+    else:
+        print(f'Not a valid file path - {file_path}')
+    return image_object
+
+
+
 # Filter the images based on search criteria.
 def filter_images(images_with_attributes, filter_based_on = 'none', filter_value = ''):
     """
