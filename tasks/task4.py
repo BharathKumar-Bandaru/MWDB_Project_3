@@ -8,6 +8,7 @@ def task4(input_folder, feature_model, num_layers, num_hashes_per_layer, query_i
     lsh_obj = LocalitySensitiveHashing(num_layers, num_hashes_per_layer, image_objects)
 
     query_image_obj = get_image_object_from_file(query_image_path)
+    query_image_obj.set_features(get_flattened_features_for_a_single_image(query_image_obj.image_arr, feature_model))
     result_images = lsh_obj.get_similar_objects(query_image_obj, num_similar_images_to_retrieve)
 
 
