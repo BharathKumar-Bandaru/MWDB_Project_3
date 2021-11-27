@@ -48,12 +48,29 @@ class LocalitySensitiveHashing:
     def compute_distance(self, query_image_features, hash_bucket_image_features):
         return distance.euclidean(query_image_features, hash_bucket_image_features)
 
+    def get_image_indices_with_distances(self, query_image_obj, image_object_list):
+        result = []
+        for idx, image in enumerate(image_object_list):
+            dist = self.compute_distance(query_image_obj.features, image.features)
+            result.append((idx, dist))
+        return result
+
     def get_similar_objects(self, query_image_obj, num_similar_images_to_retrieve):
         hash_codes = self.get_hash_codes_for_object(query_image_obj.features)
         image_set = set()
         for idx, hash_code in enumerate(hash_codes):
             images = self.retrieve_objects_in_bucket(idx, hash_code)
             image_set.update(images)
-        print(len(image_set))
+        image_object_list = list(image_set)
+        image_indices_and_dist = self.get_image_indices_with_distances(query_image_obj, image_object_list)
+        image_indices_and_dist.sort(key = lambda x: x[1])
+
+        result_image_objects = []
+        n = min(num_similar_images_to_retrieve, len(image_indices_and_dist))   #returning only the available images in hash buckets
+        for i in range(n):
+            image_obj_index = image_indices_and_dist[i][0]
+            result_image_objects.append(image_object_list[image_obj_index])
+
+        return result_image_objects
 
 
