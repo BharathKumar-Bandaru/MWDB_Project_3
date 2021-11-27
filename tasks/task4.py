@@ -7,7 +7,6 @@ def task4(input_folder, feature_model, num_layers, num_hashes_per_layer, query_i
     image_objects = get_image_objects_from_dict(images_with_attributes, image_features)
     lsh_obj = LocalitySensitiveHashing(num_layers, num_hashes_per_layer, image_objects)
 
-    print(images_with_attributes)
     ##Testing##
     hash_buckets_per_layer = lsh_obj.get_hash_buckets_per_layer()
     for i in range(len(hash_buckets_per_layer)):
