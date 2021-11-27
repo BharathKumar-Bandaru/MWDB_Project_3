@@ -140,8 +140,8 @@ def svm(latent_semantics, images_with_attributes, image_features,
         X_data = np.array(np.matmul(image_features, latent_semantics.transpose()))
         X_test = np.array(np.matmul(test_image_features, latent_semantics.transpose()))
     else:
-        X_data = latent_semantics
-        X_test = test_image_features
+        X_data = np.array(latent_semantics)
+        X_test = np.array(test_image_features)
 
     if key not in svm_models.keys():
         print("Training the model")

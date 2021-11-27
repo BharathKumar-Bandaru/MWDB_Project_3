@@ -3,23 +3,23 @@ import numpy as np
 
 from tasks.task1_2_3 import task_1_2_3
 fm = ['cm', 'elbp', 'hog']
-k = [10, 20, 30]
+k = [5, 10, 15, 20, 30, 40, "all"]
 test = ['100', '500', '1000', '2000', '3000', '4000']
 
-# acc = []
-# for i in fm:
-#     for k_ in k:
-#         for te in test:
-#             acc.append(task_1_2_3(task_number = 1, input_folder_path = 'Dataset', feature_model = i, k =k_, test_folder_path = te, classifier =  'svm',
-#                dim_red_technique = 'pca', output_folder = 'output', latent_semantics_file_name = None,
-#                use_cached_input_images = True))
-#             print(acc[-1])
-#
-# print(np.array(acc))
-
-task_1_2_3(task_number = 1, input_folder_path = '1000', feature_model = "elbp", k =5, test_folder_path = '100', classifier =  'decision-tree',
+acc = []
+for i in fm:
+    for k_ in k:
+        for te in test:
+            acc.append(task_1_2_3(task_number = 3, input_folder_path = 'Dataset', feature_model = i, k =k_, test_folder_path = te, classifier =  'svm',
                dim_red_technique = 'pca', output_folder = 'output', latent_semantics_file_name = None,
-               use_cached_input_images = True)
+               use_cached_input_images = True))
+            print(acc[-1])
+
+print(np.array(acc))
+
+# task_1_2_3(task_number = 1, input_folder_path = '1000', feature_model = "elbp", k =5, test_folder_path = '100', classifier =  'decision-tree',
+#                dim_red_technique = 'pca', output_folder = 'output', latent_semantics_file_name = None,
+#                use_cached_input_images = True)
 
 
 # task_1_2_3(task_number = 1, input_folder_path = 'Dataset', feature_model = 'elbp', k =10, test_folder_path = '100', classifier =  'svm',
