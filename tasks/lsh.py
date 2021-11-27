@@ -38,7 +38,8 @@ class LocalitySensitiveHashing:
         return hash_codes
 
     def retrieve_objects_in_bucket(self, layer_num, hashcode):
-        return self.hash_buckets_per_layer[layer_num][hashcode]
+        object_indices = self.hash_buckets_per_layer[layer_num][hashcode]
+        return [self.image_objects[index] for index in object_indices]
 
     def get_hash_buckets_per_layer(self):
         return self.hash_buckets_per_layer
