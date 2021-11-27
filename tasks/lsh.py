@@ -54,5 +54,6 @@ class LocalitySensitiveHashing:
         for idx, hash_code in enumerate(hash_codes):
             images = self.retrieve_objects_in_bucket(idx, hash_code)
             image_set.update(images)
+        print(len(image_set))
 
 
