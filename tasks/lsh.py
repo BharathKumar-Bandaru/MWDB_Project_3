@@ -14,7 +14,7 @@ class LocalitySensitiveHashing:
 
     def create_index_structure_with_input_vectors(self):
         hash_buckets_per_layer = self.hash_buckets_per_layer
-        for image_obj in self.image_objects:
+        for idx, image_obj in enumerate(self.image_objects):
             input_vector = image_obj.features
             hash_codes = self.get_hash_codes_for_object(input_vector)
             for i in range(self.num_layers):
@@ -22,7 +22,7 @@ class LocalitySensitiveHashing:
                 hash_code = hash_codes[i]
                 if hash_code not in buckets_dict:
                     buckets_dict[hash_code] = []
-                buckets_dict[hash_code].append(image_obj)
+                buckets_dict[hash_code].append(idx)
 
     def get_hash_codes_for_object(self, input_vector):
         hash_codes = []
