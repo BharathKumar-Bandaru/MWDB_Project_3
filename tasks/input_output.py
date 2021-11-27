@@ -53,7 +53,7 @@ def get_image_object_from_file(file_path):
     if os.path.isfile(file_path):
         filename = os.path.basename(file_path)
         image = imread(file_path, as_gray = True)
-        image_obj = Image(filename = filename, image_arr = image)
+        image_object = Image(filename = filename, image_arr = image)
     else:
         print(f'Not a valid file path - {file_path}')
     return image_object
