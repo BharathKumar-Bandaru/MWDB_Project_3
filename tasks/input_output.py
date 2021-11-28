@@ -7,6 +7,7 @@ from .weight_matrices_calc import get_subject_weight_matrix, get_type_weight_mat
 from .features import *
 from .dim_red import perform_dim_red
 from .image import Image
+import icecream
 
 #dictionary of image datasets based on folder
 #folder_name is the key, list of image_dict is the value
@@ -83,15 +84,16 @@ def get_label_arr_from_dict(images_with_attributes, label_name):
     """
     return [image_dict[label_name] for image_dict in images_with_attributes]
 
+
 def get_image_objects_from_dict(images_with_attributes, features_list):
-	image_objects = []
-	for i in range(len(images_with_attributes)):
-		image_dict = images_with_attributes[i]
-		image_obj = Image(filename = image_dict['filename'], image_arr = image_dict['image'], type = image_dict['type'],
-						  subject_id = image_dict['subject_id'], image_id = image_dict['image_id'],
+    image_objects = []
+    for i in range(len(images_with_attributes)):
+        image_dict = images_with_attributes[i]
+        image_obj = Image(filename = image_dict['filename'], image_arr = image_dict['image'], type = image_dict['type'],
+                          subject_id = image_dict['subject_id'], image_id = image_dict['image_id'],
                           features = features_list[i])
-		image_objects.append(image_obj)
-	return image_objects
+        image_objects.append(image_obj)
+    return image_objects
 
 
 
@@ -137,46 +139,42 @@ def save_images_by_clearing_folder(image_file_name_tuple_list, folder_path):
         mpl.image.imsave(fname = os.path.join(folder_path, file_name), arr = imageArr, cmap = 'gray')
 
 
-def add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, filename):
-    print("came till here 2")
-    print(len(left_factor_matrix))
-    print(len(labels))
-    updated_mat = []
+def add_label_to_image_arr(images_new_space, labels):
     ans = []
-    for i in range(len(left_factor_matrix)):
-        print(str( "_" + str(labels[i])))
-        updated_mat = np.append(left_factor_matrix[i], labels[i])
+    for i, val in enumerate(images_new_space):
+        updated_mat = np.append(val, labels[i])
         ans.append(updated_mat)
+    return ans
 
 
-    store_array_as_csv(ans, output_folder, filename)
 
 
-def calculate_latent_semantics_with_type_labels(feature_model, k, dim_red_technique, label_type,
-            folder_path='input_images', output_folder='output'):
-    images_with_attributes = get_images_and_attributes_from_folder(folder_path)
-    images = get_image_arr_from_dict(images_with_attributes)
-    #labels = get_label_arr_from_dict(images_with_attributes)
-    image_features = get_flattened_features_for_images(images, feature_model)
-    if feature_model == "cm" and dim_red_technique == "lda":
-        feature_max_value = np.max(image_features)
-        image_features = image_features + feature_max_value
-    left_factor_matrix = core_matrix = right_factor_matrix = None
-    dim_red_technique = dim_red_technique.lower()
-    left_factor_matrix, right_factor_matrix = perform_dim_red(dim_red_technique, image_features, k)
-    if label_type == "type":
-        labels = get_type_label_arr_from_dict(images_with_attributes)
-        store_array_as_csv(right_factor_matrix, output_folder, "images_arr.csv")
-        add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_type.csv")
-        store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_type.csv")
-    elif label_type == "subject":
-        labels = get_subject_arr_from_dict(images_with_attributes)
-        add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_subject.csv")
-        store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_subject.csv")
-    else:
-        labels = get_image_id_arr_from_dict(images_with_attributes)
-        add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_image.csv")
-        store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_image.csv")
+def calculate_latent_semantics_with_type_labels(label_type, image_attributes, images_new_space):
+    # images_with_attributes = get_images_and_attributes_from_folder(folder_path)
+    # images = get_image_arr_from_dict(images_with_attributes)
+    # #labels = get_label_arr_from_dict(images_with_attributes)
+    # image_features = get_flattened_features_for_images(images, feature_model)
+    # if feature_model == "cm" and dim_red_technique == "lda":
+    #     feature_max_value = np.max(image_features)
+    #     image_features = image_features + feature_max_value
+    # left_factor_matrix = core_matrix = right_factor_matrix = None
+    # dim_red_technique = dim_red_technique.lower()
+    # left_factor_matrix, right_factor_matrix = perform_dim_red(dim_red_technique, image_features, k)
+    labels = process_labels(image_attributes, label_type)
+    return add_label_to_image_arr(images_new_space, labels)
+    # if label_type == "type":
+    #     labels = get_type_label_arr_from_dict(images_with_attributes)
+    #     store_array_as_csv(right_factor_matrix, output_folder, "images_arr.csv")
+    #     add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_type.csv")
+    #     store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_type.csv")
+    # elif label_type == "subject":
+    #     labels = get_subject_arr_from_dict(images_with_attributes)
+    #     add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_subject.csv")
+    #     store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_subject.csv")
+    # else:
+    #     labels = get_image_id_arr_from_dict(images_with_attributes)
+    #     add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_image.csv")
+    #     store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_image.csv")
 
 
 def perform_post_operations(images_with_attributes, left_factor_matrix, right_factor_matrix, output_folder,
