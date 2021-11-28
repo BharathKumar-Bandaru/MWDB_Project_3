@@ -123,11 +123,11 @@ class LocalitySensitiveHashing:
         retrieved_results = set(retrieved_results)
         correct_results = set(correct_results)
 
-        misses = len(correct_results - retrieved_results) #false negatives
+        miss_rate = len(correct_results - retrieved_results)/n #false negative rate
         false_positives = len(retrieved_results - correct_results)
 
         print(f'False Positives: {false_positives}')
-        print(f'Misses: {misses}')
+        print(f'Miss rate: {miss_rate}')
 
     def print_index_structure_stats(self):
         print('\n--------------')
