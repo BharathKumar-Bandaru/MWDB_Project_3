@@ -4,6 +4,7 @@ from Feature_models.ColorMoments import compute_color_moment_of_image
 from Feature_models.hog import computer_hog
 from Feature_models.elbp import compute_elbp
 from input_output import save_images_by_clearing_folder
+
 def compute_number_of_bits(b, d):
     # v = number of vectors
     # b = number of bits
@@ -58,25 +59,31 @@ def bin(n, length):
 
 def compute_region(vector, partition_points):
     regions = []
-    # print(len(vector))
+
+    buckets_list = []
     for j in range(0, len(vector)):
         flag = 0
         region = 0
-        # print("Length of partition points is: ", len(partition_points[j]))
+
         for i in range(0, len(partition_points[j])-1):
+
+            buckets_list.append(partition_points[j][i])
             if(partition_points[j][i] <= int(vector[j]) and int(vector[j]) < partition_points[j][i+1]):
                 regions.append(i)
                 flag = 1
                 break;
         #Handle edge case
-        if(flag == 0):
-            if(int(vector[j]) < partition_points[j][0]):
+
+        if flag == 0:
+            if vector[j] < partition_points[j][0]:
+                buckets_list.append(partition_points[j][0])
                 regions.append(partition_points[j][0])
-            elif(int(vector[j]) >= partition_points[j][len(partition_points)-1]):
-                regions.append(partition_points[j][len(partition_points)-1])
+            elif vector[j] >= partition_points[j][len(partition_points[j])-1]:
+                buckets_list.append(partition_points[j][len(partition_points[j])-1])
+                regions.append(partition_points[j][len(partition_points[j])-1])
 
 
-    return regions
+    return regions, set(buckets_list)
 
 def compute_bit_string(vector, partition_points, bits):
     final_rep = ""
@@ -85,19 +92,21 @@ def compute_bit_string(vector, partition_points, bits):
         flag = 0
 
         for i in range(0, len(partition_points[j])-1):
-            if (partition_points[j][i] <= vector[j] and vector[j] < partition_points[j][i + 1]):
+
+            if partition_points[j][i] <= vector[j] and vector[j] < partition_points[j][i + 1]:
                 regions.append(i)
                 bit_string = bin(partition_points[j][i], bits[j])
                 final_rep = final_rep + bit_string
                 flag = 1
                 break;
         # Handle edge case
-        if (flag == 0):
-            if (vector[j] < partition_points[j][0]):
+        if flag == 0:
+
+            if vector[j] < partition_points[j][0]:
                 regions.append(partition_points[j][0])
                 bit_string = bin(partition_points[j][0], bits[j])
                 final_rep = final_rep + bit_string
-            elif (vector[j] >= partition_points[j][len(partition_points[j]) - 1]):
+            elif vector[j] >= partition_points[j][len(partition_points[j]) - 1]:
                 regions.append(partition_points[j][len(partition_points[j]) - 1])
                 bit_string = bin(partition_points[j][len(partition_points[j]) - 1], bits[j])
                 final_rep = final_rep + bit_string
@@ -107,8 +116,8 @@ def compute_bit_string(vector, partition_points, bits):
 
 def compute_lower_bound(vector, vq, partition_points):
     li = 0
-    rq = compute_region(vq, partition_points)
-    ri = compute_region(vector, partition_points)
+    rq, bucketsq = compute_region(vq, partition_points)
+    ri, bucketsi = compute_region(vector, partition_points)
 
     for j in range(0, len(rq)):
         if ri[j] < rq[j]:
@@ -119,7 +128,7 @@ def compute_lower_bound(vector, vq, partition_points):
             lij = partition_points[j][ri[j]] - vq[j]
         li += lij*lij
 
-    return math.sqrt(li)
+    return math.sqrt(li), bucketsq
 
 def compute_euclidean(v1, v2):
     dist = 0
@@ -132,6 +141,7 @@ def compute_manhattan(v1, v2):
     for i in range(0, len(v1)):
         dist += abs(v1[i]-v2[i])
     return dist
+
 def Candidate(d, i, dst, ans, t):
     if d < dst[t-1]:
         dst[t-1] = d
@@ -145,30 +155,33 @@ def Candidate(d, i, dst, ans, t):
 def simple_search_algorithm(feature_vectors, vq, t, partition_points):
     ans = []
     dst = []
-    buckets = 0
+    images_considered = 0
     for k in range(0, t):
         dst.append(float('inf'))
         ans.append(0)
 
-
+    total_buckets = []
     d = float('inf')
     idx = 0
     for i in range(0, len(feature_vectors)):
-        li = compute_lower_bound(feature_vectors[i], vq, partition_points)
+        li, buckets = compute_lower_bound(feature_vectors[i], vq, partition_points)
+        for b in buckets:
+            total_buckets.append(b)
+
 
         if li < d or idx < t:
-            buckets += 1
+            images_considered += 1
             d = compute_euclidean(vq, feature_vectors[i])
             idx+=1
             ans, dst = Candidate(d, i, dst, ans, t)
 
-    return ans, dst, buckets
+    return ans, dst, len(set(total_buckets)), images_considered
 
 def calculate_distances(original, test):
     result = {}
     i = 0
     for img in original:
-        result[i] = compute_manhattan(img, test)
+        result[i] = compute_euclidean(img, test)
         i+=1
 
     actual_result = sorted(result.items(), key=lambda x: x[1])
@@ -176,40 +189,38 @@ def calculate_distances(original, test):
     return actual_result
 
 
-#Test function
-#read dataset from folder path. Output is a list of dictionaries
-image_data = get_images_and_attributes_from_folder("Dataset")
+
+image_data = get_images_and_attributes_from_folder("4000")
 images = []
 file_names = []
 for img_dict in image_data:
     images.append(img_dict['image'])
     file_names.append(img_dict['filename'])
 feature_vetors = []
+print("Calculating features vectors of the dataset")
 for im in images:
-    input_vector = computer_hog(im)
+    input_vector = compute_color_moment_of_image(im)
     feature_vetors.append(input_vector)
 
 
-#take b value as input"
-b = 5000
+
+
 
 d = len(feature_vetors[0])
 
+b = 800
+print("Computing bits per dimension: ")
 bits = compute_number_of_bits(b, d)
 
 overall_partition_list = []
-#Get partitionpartition_points[len(partition_points)-1] points for each dimension
-#overall_partition_list contains patition points list for every dimension.
-print(len(bits))
-print(len(feature_vetors[0]))
+"""Calculate the partition points for each dimension. These points are added to the overall_partition_points list
+which will contains the partition points for all dimensions."""
 
 for i in range(0, d):
     partition_points = distribute_partition_points(feature_vetors, i, bits)
-    #print(partition_points)
     overall_partition_list.append(partition_points)
 
-
-#Get approximations for each vector/datapoint
+"""Calculate approximation vectors for each vector in the Database"""
 approximations = []
 print("Calculating approximations: ")
 for i in range(0, len(feature_vetors)):
@@ -217,7 +228,7 @@ for i in range(0, len(feature_vetors)):
     approximations.append(bit_string)
 approx_set = set(approximations)
 
-
+"""Read the query image and compute its feature vecyor"""
 test_dataset = get_images_and_attributes_from_folder("TestVA")
 actual = []
 test_type = test_dataset[0]['type']
@@ -227,9 +238,13 @@ test_file_name = test_dataset[0]['filename']
 actual.append(test_type)
 actual.append(test_subject_id)
 
-query_vector = computer_hog(test_dataset[0]['image'])
+query_vector = compute_color_moment_of_image(test_dataset[0]['image'])
 t = 10
-ans, dst, buckets = simple_search_algorithm(feature_vetors, query_vector, t, overall_partition_list)
+print("Performing Simple Search Algorithm: ")
+
+
+ans, dst, total_buckets, images_considered = simple_search_algorithm(feature_vetors, query_vector, t, overall_partition_list)
+
 expected_files = []
 actual_result = calculate_distances(feature_vetors, query_vector)
 
@@ -241,24 +256,24 @@ for x in actual_result:
     idx+=1
     if idx == t:
         break
-
-
-print("Output vectors are saved to the Output_VAFiles folder: ")
+print("Output images are saved to the Output_VAFiles folder. ")
 output = []
 output.append((test_dataset[0]['image'], "input-"+test_file_name))
 false_positives = 0
 misses = 0
+correct_images = 0
 for a in ans:
-    if(image_data[a]['type'] not in actual and image_data[a]['subject_id'] not in actual):
+    if image_data[a]['filename'] not in expected_files:
         false_positives += 1
-    if(image_data[a]['filename'] not in expected_files) :
-        misses += 1
+    else:
+        correct_images += 1
     output.append((images[a], file_names[a]))
 save_images_by_clearing_folder(output, "Output_VAFiles")
+
 
 print("Number of unique approximations considered are: ", len(approx_set))
 print("Number of overall approximations considered are ", len(approximations))
 print("Number of bytes required for index structure is: ", len(approximations)*len(approximations[0])/8)
-print("Number of buckets searched are: ", buckets)
-print("The number of false positives are: ",false_positives)
-print("The miss rate is: ",misses/len(expected_files))
+print("Number of buckets searched are: ", total_buckets)
+print("The number of false positives are: ",(images_considered-correct_images)/images_considered)
+print("The miss rate is: ",(t-correct_images)/t)
