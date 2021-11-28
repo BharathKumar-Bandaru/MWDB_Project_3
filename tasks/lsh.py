@@ -14,6 +14,8 @@ class LocalitySensitiveHashing:
         self.hash_buckets_per_layer = [{} for i in range(self.num_layers)]
         self.create_index_structure_with_input_vectors()
         self.num_buckets_searched = 0
+        self.latest_query_image_obj = None
+        self.latest_query_results = None
 
     def create_index_structure_with_input_vectors(self):
         hash_buckets_per_layer = self.hash_buckets_per_layer
@@ -47,8 +49,8 @@ class LocalitySensitiveHashing:
     def get_hash_buckets_per_layer(self):
         return self.hash_buckets_per_layer
 
-    def compute_distance(self, query_image_features, hash_bucket_image_features):
-        return distance.euclidean(query_image_features, hash_bucket_image_features)
+    def compute_distance(self, vector1, vector2):
+        return distance.euclidean(vector1, vector2)
 
     def get_image_indices_with_distances_sorted(self, query_image_obj, image_object_list):
         result = []
@@ -98,7 +100,34 @@ class LocalitySensitiveHashing:
             image_obj_index = image_indices_and_dist[i][0]
             result_image_objects.append(image_object_list[image_obj_index])
 
+        self.latest_query_image_obj = query_image_obj
+        self.latest_query_results = list(result_image_objects)
         return result_image_objects
+
+    def compute_and_print_false_positives_and_misses(self):
+        if self.latest_query_image_obj is None or self.latest_query_results is None:
+            print('No Query image object or query results found')
+            return
+        retrieved_results = []
+        for image_obj in self.latest_query_results:
+            retrieved_results.append(image_obj.filename)
+
+        n = len(self.latest_query_results)
+        image_indices_and_dist_tuples = self.get_image_indices_with_distances_sorted(self.latest_query_image_obj, self.input_image_objects)
+
+        correct_results = []
+        for i in range(n):
+            image_obj_index = image_indices_and_dist_tuples[i][0]
+            correct_results.append(self.input_image_objects[image_obj_index].filename)
+
+        retrieved_results = set(retrieved_results)
+        correct_results = set(correct_results)
+
+        misses = len(correct_results - retrieved_results) #false negatives
+        false_positives = len(retrieved_results - correct_results)
+
+        print(f'False Positives: {false_positives}')
+        print(f'Misses: {misses}')
 
     def print_index_structure_stats(self):
         print('\n--------------')
@@ -117,3 +146,6 @@ class LocalitySensitiveHashing:
         print(f'Number of input images: {len(self.input_image_objects)}')
         print(f'Number of overall images considered (with overlaps): {self.overall_images_considered}')
         print(f'Number of unique images considered: {self.unique_images_considered}')
+
+        print('Computing false positives and miss rates...')
+        self.compute_and_print_false_positives_and_misses()
