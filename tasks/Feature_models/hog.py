@@ -12,7 +12,7 @@ def computer_hog(image):
     hog_image_rescaled= feature.hog(resize(image, (128, 64)), orientations=9, pixels_per_cell=(8, 8),
                                      cells_per_block=(2, 2), block_norm='L2', visualize=False, transform_sqrt=False,
                                      feature_vector=True, multichannel=None)
-    return hog_image_rescaled
+    return hog_image_rescaled * 100
 
 
 # using Manhattan distance to calculate the distance between two images using the HOG model

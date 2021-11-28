@@ -10,8 +10,8 @@ from PIL import Image
 # using the skimage library to calculate the local binary pattern, method passed is "uniform" which integrates LBP
 # with rotational variance.
 def compute_elbp(img):
-    return local_binary_pattern(img, 16, 2, "uniform") + local_binary_pattern(img, 8, 1,"uniform") + local_binary_pattern(img, 24, 3, "uniform")
-
+    x = local_binary_pattern(img, 16, 2, "uniform") + local_binary_pattern(img, 8, 1,"uniform") + local_binary_pattern(img, 24, 3, "uniform")
+    return x.flatten()
 
 # using Manhattan Distance to calculate the distance between two Local Binary Patterns
 def lpb_comparison_manhanttan(lbp1, lbp2):
