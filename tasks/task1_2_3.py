@@ -110,24 +110,41 @@ def print_classification_stats(predicted_labels, correct_labels) :
             correct_labels_count += 1
     print('Accuracy for Task 1 is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
 
-    """CM = confusion_matrix(correct_labels, predicted_labels, target_classes = predicted_labels)
-    print(CM)
-    TN = CM[0][0]
-    FN = CM[1][0]
-    TP = CM[1][1]
-    FP = CM[0][1]
-    FPR = FP / (FP + TN)
-    FNR = FN / (TP + FN)
-    print('False Positive rate - ' + str(FPR))
-    print('False Negative rate - ' + str(FNR))"""
-
     unique_label = np.unique([correct_labels, predicted_labels])
-    cmtx = pd.DataFrame(
+    conf_matrix = pd.DataFrame(
         confusion_matrix(correct_labels, predicted_labels, labels=unique_label),
-        index=['true:{:}'.format(x) for x in unique_label],
-        columns=['pred:{:}'.format(x) for x in unique_label]
+        index = unique_label,
+        columns= unique_label
     )
-    print(cmtx)
+    conf_matrix_index = conf_matrix.index.values.tolist()
+    conf_matrix_list = []
+    for i in conf_matrix_index:
+        conf_matrix_list.append((conf_matrix.loc[i].values.tolist()))
+
+    TP = []
+    FP = []
+    TN = []
+    FN = []
+
+    n = len(conf_matrix_list)
+    for idx in range(len(conf_matrix_list)):
+        TP.append(conf_matrix_list[idx][idx])
+        TN.append(sum(conf_matrix_list[i][i] for i in range(n) if i != idx))
+        FN.append(sum(conf_matrix_list[idx][i] for i in range(n) if i != idx))
+        FP.append(sum(conf_matrix_list[i][idx] for i in range(n) if i != idx))
+
+    FPR = []
+    FNR = []
+
+    for idx, val in enumerate(conf_matrix_index):
+        den1 = FP[idx] + TN[idx] if FP[idx] + TN[idx] != 0 else 1
+        den2 = TP[idx] + FN[idx] if TP[idx] + FN[idx] != 0 else 1
+        FPR.append(FP[idx] / den1)
+        FNR.append(FN[idx] / den2)
+        print('-----------------------------')
+        print('Label - ' + str(val))
+        print('False Positive Rate - ' + str(FPR[idx]))
+        print('Misses Rate - ' + str(FNR[idx]))
 
 """
 def task1_2_3(feature_model, filter, image_type, k, dim_red_technique,
