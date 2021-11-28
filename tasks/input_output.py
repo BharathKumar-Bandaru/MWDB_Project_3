@@ -48,6 +48,18 @@ def get_image_objects_from_folder(folder_path):
             image_objects.append(image_obj)
     return image_objects
 
+def get_image_object_from_file(file_path):
+    image_object = None
+    if os.path.isfile(file_path):
+        filename = os.path.basename(file_path)
+        image = imread(file_path, as_gray = True)
+        image_object = Image(filename = filename, image_arr = image)
+    else:
+        print(f'Not a valid file path - {file_path}')
+    return image_object
+
+
+
 # Filter the images based on search criteria.
 def filter_images(images_with_attributes, filter_based_on = 'none', filter_value = ''):
     """
@@ -141,3 +153,26 @@ def save_images_by_clearing_folder(image_file_name_tuple_list, folder_path):
         clear_folder_contents(folder_path)
     for imageArr, file_name in image_file_name_tuple_list:
         mpl.image.imsave(fname = os.path.join(folder_path, file_name), arr = imageArr, cmap = 'gray')
+
+# Mapping class for task 1
+class_map = {
+    'cc' : 1,
+    'con' : 2,
+    'emboss': 3,
+    'jitter': 4,
+    'neg': 5,
+    'noise01': 6,
+    'noise02': 7,
+    'original': 8,
+    'poster': 9,
+    'rot': 10,
+    'smooth': 11,
+    'stipple': 12
+}
+
+def process_labels(images_data, filter_type = 'type'):
+    labels = []
+    for each in images_data:
+        label = class_map[each['type']] if filter_type == "type" else int(each[filter_type])
+        labels.append(label)
+    return np.array(labels)
