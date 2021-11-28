@@ -1,6 +1,6 @@
 import math
 from tasks.input_output import *
-total_buckets = []
+
 def compute_number_of_bits(b, d):
     # v = number of vectors
     # b = number of bits
@@ -56,32 +56,30 @@ def bin(n, length):
 def compute_region(vector, partition_points):
     regions = []
 
-    # buckets_list = []
+    buckets_list = []
     for j in range(0, len(vector)):
         flag = 0
         region = 0
 
         for i in range(0, len(partition_points[j])-1):
-            total_buckets.append(partition_points[j][i])
-            #buckets_list.append(partition_points[j][i])
+
+            buckets_list.append(partition_points[j][i])
             if(partition_points[j][i] <= int(vector[j]) and int(vector[j]) < partition_points[j][i+1]):
                 regions.append(i)
                 flag = 1
-                break;
+                break
         #Handle edge case
 
         if flag == 0:
             if vector[j] < partition_points[j][0]:
-                total_buckets.append(partition_points[j][i])
-                # buckets_list.append(partition_points[j][0])
+                buckets_list.append(partition_points[j][0])
                 regions.append(partition_points[j][0])
             elif vector[j] >= partition_points[j][len(partition_points[j])-1]:
-                total_buckets.append(partition_points[j][i])
-                # buckets_list.append(partition_points[j][len(partition_points[j])-1])
+                buckets_list.append(partition_points[j][len(partition_points[j])-1])
                 regions.append(partition_points[j][len(partition_points[j])-1])
 
 
-    return regions
+    return regions, set(buckets_list)
 
 def compute_bit_string(vector, partition_points, bits):
     final_rep = ""
@@ -89,14 +87,28 @@ def compute_bit_string(vector, partition_points, bits):
     for j in range(0, len(vector)):
         flag = 0
 
-        for i in range(0, len(partition_points[j])-1):
-
-            if partition_points[j][i] <= vector[j] and vector[j] < partition_points[j][i + 1]:
-                regions.append(i)
-                bit_string = bin(partition_points[j][i], bits[j])
-                final_rep = final_rep + bit_string
+        # for i in range(0, len(partition_points[j])-1):
+        #
+        #     if partition_points[j][i] <= vector[j] and vector[j] < partition_points[j][i + 1]:
+        #         regions.append(i)
+        #         bit_string = bin(partition_points[j][i], bits[j])
+        #         final_rep = final_rep + bit_string
+        #         flag = 1
+        #         break
+        start = 0
+        end = len(partition_points[j])-1
+        while(start <= end):
+            mid = int(start + (end-start)/2)
+            if partition_points[j][mid] <= vector[j] and vector[j] < partition_points[j][mid+1]:
+                regions.append(mid)
+                bit_string = bin(partition_points[j][mid], bits[j])
+                final_rep += bit_string
                 flag = 1
                 break
+            elif partition_points[j][mid] > vector[j]:
+                end = mid-1
+            else:
+                start = mid+1
         # Handle edge case
         if flag == 0:
 
@@ -112,10 +124,10 @@ def compute_bit_string(vector, partition_points, bits):
     return final_rep, regions
 
 
-def compute_lower_bound(vector, vq, partition_points):
+def compute_lower_bound(vector, vq, partition_points, ri):
     li = 0
-    rq = compute_region(vq, partition_points)
-    ri = compute_region(vector, partition_points)
+    rq, bucketsq = compute_region(vq, partition_points)
+    # ri = compute_region(vector, partition_points)
 
     for j in range(0, len(rq)):
         if ri[j] < rq[j]:
@@ -126,7 +138,7 @@ def compute_lower_bound(vector, vq, partition_points):
             lij = partition_points[j][ri[j]] - vq[j]
         li += lij*lij
 
-    return math.sqrt(li)
+    return math.sqrt(li), bucketsq
 
 def compute_euclidean(v1, v2):
     dist = 0
@@ -150,7 +162,7 @@ def Candidate(d, i, dst, ans, t):
     dst.sort()
     return ans, dst
 
-def simple_search_algorithm(feature_vectors, vq, t, partition_points):
+def simple_search_algorithm(feature_vectors, vq, t, partition_points, regions):
     ans = []
     dst = []
     images_considered = 0
@@ -158,15 +170,12 @@ def simple_search_algorithm(feature_vectors, vq, t, partition_points):
         dst.append(float('inf'))
         ans.append(0)
 
-    # total_buckets = []
+    total_buckets = []
     d = float('inf')
     idx = 0
     for i in range(0, len(feature_vectors)):
-        li = compute_lower_bound(feature_vectors[i], vq, partition_points)
-        # total_buckets += buckets
-        # for b in buckets:
-        #     total_buckets.append(b)
-
+        li, buckets = compute_lower_bound(feature_vectors[i], vq, partition_points, regions[i])
+        total_buckets += buckets
 
         if li < d or idx < t:
             images_considered += 1
@@ -211,9 +220,11 @@ def perform_va_files(folder_path, feature, q_image_name, t, b):
 
     """Calculate approximation vectors for each vector in the Database"""
     approximations = []
+    regions = []
     print("Calculating approximations: ")
     for i in range(0, len(image_features)):
-        bit_string, regions = compute_bit_string(image_features[i], overall_partition_list, bits)
+        bit_string, region = compute_bit_string(image_features[i], overall_partition_list, bits)
+        regions.append(region)
         approximations.append(bit_string)
     approx_set = set(approximations)
 
@@ -227,7 +238,7 @@ def perform_va_files(folder_path, feature, q_image_name, t, b):
     query_vector = query_image_features
 
     print("Performing Simple Search Algorithm: ")
-    ans, dst, total_buckets, images_considered = simple_search_algorithm(image_features, query_vector, t, overall_partition_list)
+    ans, dst, total_buckets, images_considered = simple_search_algorithm(image_features, query_vector, t, overall_partition_list, regions)
     expected_files = []
     actual_result = calculate_distances(image_features, query_vector)
 
@@ -260,8 +271,8 @@ def perform_va_files(folder_path, feature, q_image_name, t, b):
     print("Number of overall approximations considered are ", len(approximations))
     print("Number of bytes required for index structure is: ", len(approximations) * len(approximations[0]) / 8)
     print("Number of buckets searched are: ", total_buckets)
-    print("The number of false positives are: ", false_positives)
-    print("The miss rate is: ", misses / len(expected_files))
+    print("The number of false positives are: ", (images_considered - correct_images)/t)
+    print("The miss rate is: ", (t - correct_images)/t)
     return output_features
 
 

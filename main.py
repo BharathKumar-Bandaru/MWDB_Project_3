@@ -1,8 +1,3 @@
-import os
-
-import numpy as np
-from skimage.io import imread
-from tasks.input_output import *
 import warnings
 from tasks.task1_2_3 import *
 from tasks.task8 import *
