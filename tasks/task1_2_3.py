@@ -99,14 +99,16 @@ def decision_tree(latent_semantics, images_with_attributes, image_features,
     dc = DecisionTreeClassifier()
 
     if k!="all":
-        dataset_features = np.matmul(image_features, np.transpose(latent_semantics))
-        images_att_new_space = np.matmul(test_image_features, latent_semantics.transpose())
+        dataset_features = np.array(np.matmul(image_features, np.transpose(latent_semantics)))
+        images_att_new_space = np.array(np.matmul(test_image_features, latent_semantics.transpose()))
     else:
-        images_att_new_space = test_image_features
-        dataset_features = image_features
+        images_att_new_space = np.array(test_image_features)
+        dataset_features = np.array(image_features)
+    dataset_features = calculate_latent_semantics_with_type_labels(label_name, images_with_attributes, dataset_features)
+
 
     if key not in decision_tree_models.keys():
-        root = dc.make_tree(dataset_features.tolist())
+        root = dc.make_tree(dataset_features)
         print("Tree is formed.")
     else:
         root = decision_tree_models[key]
