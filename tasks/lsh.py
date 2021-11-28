@@ -134,6 +134,7 @@ class LocalitySensitiveHashing:
         print('LSH Index Structure Stats:')
         hash_buckets_per_layer = self.hash_buckets_per_layer
 
+        """
         print('No. of objects per hash code in each layer:')
         for i in range(len(hash_buckets_per_layer)):
             print(f'Layer {i + 1}:')
@@ -141,6 +142,7 @@ class LocalitySensitiveHashing:
             for key in hash_buckets_dict:
                 print(f'{key}: {len(hash_buckets_dict[key])}')
             print('-----------')
+        """
         print(f'Total index structure size in bytes: {sys.getsizeof(hash_buckets_per_layer)}')
         print(f'Number of buckets searched: {self.num_buckets_searched}')
         print(f'Number of input images: {len(self.input_image_objects)}')
