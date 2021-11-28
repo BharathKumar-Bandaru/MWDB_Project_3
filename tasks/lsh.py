@@ -16,6 +16,8 @@ class LocalitySensitiveHashing:
         self.num_buckets_searched = 0
         self.latest_query_image_obj = None
         self.latest_query_results = None
+        self.num_overall_images_considered = 0
+        self.unique_images_considered = None
 
     def create_index_structure_with_input_vectors(self):
         hash_buckets_per_layer = self.hash_buckets_per_layer
@@ -62,8 +64,6 @@ class LocalitySensitiveHashing:
 
     def get_similar_objects(self, query_image_obj, num_similar_images_to_retrieve):
         self.num_buckets_searched = 0
-        self.overall_images_considered = 0
-        self.unique_images_considered = 0
 
         hash_codes = self.get_hash_codes_for_object(query_image_obj.features)
         print(f'Hash codes of the query image in different layers: {hash_codes}')
@@ -75,23 +75,12 @@ class LocalitySensitiveHashing:
             objects_retrieved_in_diff_layers.append(set(images))
             self.num_buckets_searched += 1
 
-        bucket_intersection_set = set.intersection(*objects_retrieved_in_diff_layers)
-        bucket_union_set = set.union(*objects_retrieved_in_diff_layers)
+        buckets_intersection_set = set.intersection(*objects_retrieved_in_diff_layers)
+        buckets_union_set = set.union(*objects_retrieved_in_diff_layers)
 
-
-        image_object_list = list(bucket_union_set)
-        self.overall_images_considered = num_images_in_retrieved_buckets
-
-        """
-        image_object_list = []
-        if len(bucket_intersection_set) >= num_similar_images_to_retrieve:
-            image_object_list = list(bucket_intersection_set)
-            self.overall_images_considered = len(bucket_intersection_set) * self.num_layers #elements in intersection set are present in all sets (no. of hash codes of query object = no. of layers)
-        else:
-            image_object_list = list(bucket_union_set)
-            self.overall_images_considered = num_images_in_retrieved_buckets
-        """
-        self.unique_images_considered = len(image_object_list)
+        image_object_list = list(buckets_union_set)
+        self.num_overall_images_considered = num_images_in_retrieved_buckets
+        self.unique_images_considered = list(image_object_list)
 
         image_indices_and_dist = self.get_image_indices_with_distances_sorted(query_image_obj, image_object_list)
         result_image_objects = []
@@ -108,9 +97,8 @@ class LocalitySensitiveHashing:
         if self.latest_query_image_obj is None or self.latest_query_results is None:
             print('No Query image object or query results found')
             return
-        retrieved_results = []
-        for image_obj in self.latest_query_results:
-            retrieved_results.append(image_obj.filename)
+        retrieved_results = [image_obj.filename for image_obj in self.latest_query_results]
+        unique_images_considered = [image_obj.filename for image_obj in self.unique_images_considered]
 
         n = len(self.latest_query_results)
         image_indices_and_dist_tuples = self.get_image_indices_with_distances_sorted(self.latest_query_image_obj, self.input_image_objects)
@@ -122,12 +110,17 @@ class LocalitySensitiveHashing:
 
         retrieved_results = set(retrieved_results)
         correct_results = set(correct_results)
+        unique_images_considered = set(unique_images_considered)
 
-        misses = len(correct_results - retrieved_results) #false negatives
-        false_positives = len(retrieved_results - correct_results)
+        miss_rate = len(correct_results - retrieved_results)/n #false negative rate
+        false_positive_rate = len(retrieved_results - correct_results)/n
 
-        print(f'False Positives: {false_positives}')
-        print(f'Misses: {misses}')
+        false_positive_rate_with_target_count = len(unique_images_considered - correct_results)/n
+        false_positive_rate_with_images_considered = len(unique_images_considered - correct_results)/len(unique_images_considered)
+        print(f'False Positive Rate encountered in the index structure (w.r.t target count): {false_positive_rate_with_target_count}')
+        print(f'False Positive Rate encountered in the index structure (w.r.t images considered) : {false_positive_rate_with_images_considered}')
+        print(f'False Positive Rate of the retrieved results: {false_positive_rate}')
+        print(f'Miss Rate of the retrieved results: {miss_rate}')
 
     def print_index_structure_stats(self):
         print('\n--------------')
@@ -146,8 +139,8 @@ class LocalitySensitiveHashing:
         print(f'Total index structure size in bytes: {sys.getsizeof(hash_buckets_per_layer)}')
         print(f'Number of buckets searched: {self.num_buckets_searched}')
         print(f'Number of input images: {len(self.input_image_objects)}')
-        print(f'Number of overall images considered (with overlaps): {self.overall_images_considered}')
-        print(f'Number of unique images considered: {self.unique_images_considered}')
+        print(f'Number of overall images considered (with overlaps): {self.num_overall_images_considered}')
+        print(f'Number of unique images considered: {len(self.unique_images_considered)}')
 
         print('Computing false positives and miss rates...')
         self.compute_and_print_false_positives_and_misses()
