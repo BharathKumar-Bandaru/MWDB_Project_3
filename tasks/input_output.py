@@ -3,6 +3,9 @@ from skimage.io import imread
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
+from .weight_matrices_calc import get_subject_weight_matrix, get_type_weight_matrix
+from .features import *
+from .dim_red import perform_dim_red
 from .image import Image
 
 #dictionary of image datasets based on folder
@@ -37,27 +40,6 @@ def get_images_and_attributes_from_folder(folder_path):
 
     image_dataset_dict[folder_path] = images_with_attributes
     return images_with_attributes
-
-def get_image_objects_from_folder(folder_path):
-    image_objects = []
-    for entry in os.scandir(folder_path):
-        if entry.path.endswith('.png') and entry.is_file():
-            filename = entry.name
-            image = imread(entry.path, as_gray = True)
-            image_obj = Image(filename = filename, image_arr = image)
-            image_objects.append(image_obj)
-    return image_objects
-
-def get_image_object_from_file(file_path):
-    image_object = None
-    if os.path.isfile(file_path):
-        filename = os.path.basename(file_path)
-        image = imread(file_path, as_gray = True)
-        image_object = Image(filename = filename, image_arr = image)
-    else:
-        print(f'Not a valid file path - {file_path}')
-    return image_object
-
 
 
 # Filter the images based on search criteria.
@@ -153,6 +135,98 @@ def save_images_by_clearing_folder(image_file_name_tuple_list, folder_path):
         clear_folder_contents(folder_path)
     for imageArr, file_name in image_file_name_tuple_list:
         mpl.image.imsave(fname = os.path.join(folder_path, file_name), arr = imageArr, cmap = 'gray')
+
+
+def add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, filename):
+    print("came till here 2")
+    print(len(left_factor_matrix))
+    print(len(labels))
+    updated_mat = []
+    ans = []
+    for i in range(len(left_factor_matrix)):
+        print(str( "_" + str(labels[i])))
+        updated_mat = np.append(left_factor_matrix[i], labels[i])
+        ans.append(updated_mat)
+
+
+    store_array_as_csv(ans, output_folder, filename)
+
+
+def calculate_latent_semantics_with_type_labels(feature_model, k, dim_red_technique, label_type,
+            folder_path='input_images', output_folder='output'):
+    images_with_attributes = get_images_and_attributes_from_folder(folder_path)
+    images = get_image_arr_from_dict(images_with_attributes)
+    #labels = get_label_arr_from_dict(images_with_attributes)
+    image_features = get_flattened_features_for_images(images, feature_model)
+    if feature_model == "cm" and dim_red_technique == "lda":
+        feature_max_value = np.max(image_features)
+        image_features = image_features + feature_max_value
+    left_factor_matrix = core_matrix = right_factor_matrix = None
+    dim_red_technique = dim_red_technique.lower()
+    left_factor_matrix, right_factor_matrix = perform_dim_red(dim_red_technique, image_features, k)
+    if label_type == "type":
+        labels = get_type_label_arr_from_dict(images_with_attributes)
+        store_array_as_csv(right_factor_matrix, output_folder, "images_arr.csv")
+        add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_type.csv")
+        store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_type.csv")
+    elif label_type == "subject":
+        labels = get_subject_arr_from_dict(images_with_attributes)
+        add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_subject.csv")
+        store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_subject.csv")
+    else:
+        labels = get_image_id_arr_from_dict(images_with_attributes)
+        add_label_and_store_left_factor_matrix(left_factor_matrix, labels, output_folder, "left_factor_matrix_image.csv")
+        store_array_as_csv(right_factor_matrix, output_folder, "right_factor_matrix_image.csv")
+
+
+def perform_post_operations(images_with_attributes, left_factor_matrix, right_factor_matrix, output_folder,
+                            latent_semantics_file_name, filter,
+                            subject_weight_matrix_file_name = 'task1_subject_weight_matrix.csv',
+                            type_weight_matrix_file_name = 'task2_type_weight_matrix.csv'):
+    latent_semantics = right_factor_matrix
+
+    store_array_as_csv(latent_semantics, output_folder, latent_semantics_file_name)
+
+    if filter == "type":
+        subject_weight_matrix = np.array(get_subject_weight_matrix(images_with_attributes, left_factor_matrix))
+        store_array_as_csv(subject_weight_matrix, output_folder, subject_weight_matrix_file_name)
+        sort_print_matrix(subject_weight_matrix, k=len(subject_weight_matrix[0]))
+    elif filter == "subject_id":
+        type_weight_matrix = np.array(get_type_weight_matrix(images_with_attributes, left_factor_matrix))
+        store_array_as_csv(type_weight_matrix, output_folder, type_weight_matrix_file_name)
+        sort_print_matrix(type_weight_matrix, len(type_weight_matrix[0]), "t")
+
+
+def sort_print_matrix(subject_weight_matrix, k, one="s"):
+    sorted_weights_for_each_latent_semantic = {}
+    subject_weight_matrix = np.array(subject_weight_matrix).transpose()
+    for i, val in enumerate(subject_weight_matrix):
+        latent_sematic = f"l{i}"
+        subject_weight_sort = {}
+        for j, v in enumerate(val):
+            subject = f"{one}{j}"
+            subject_weight_sort[subject] = v
+        subject_weight_sort = sorted(subject_weight_sort.items(), key=lambda kv: kv[1], reverse=True)
+        sorted_weights_for_each_latent_semantic[latent_sematic] = subject_weight_sort
+        print(f"{latent_sematic} - {sorted_weights_for_each_latent_semantic[latent_sematic]}")
+
+
+def get_type_label_arr_from_dict(images_with_attributes):
+    types = {"cc": 1, "con": 2, "emboss": 3, "jitter": 4, "neg": 5, "noise01": 6, "noise02": 7, "original": 8,
+             "poster": 9, "rot": 10, "smooth": 11, "stipple": 12}
+    labels = [image_dict['type'] for image_dict in images_with_attributes]
+    type_arr = []
+    for l in labels:
+        type_arr.append(types[l])
+    return type_arr
+
+
+def get_subject_arr_from_dict(images_with_attributes):
+    return [image_dict['subject_id'] for image_dict in images_with_attributes]
+
+
+def get_image_id_arr_from_dict(images_with_attributes):
+    return [image_dict['image_id'] for image_dict in images_with_attributes]
 
 # Mapping class for task 1
 class_map = {
