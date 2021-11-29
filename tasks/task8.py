@@ -8,6 +8,11 @@ from scipy.spatial.distance import cityblock, euclidean
 
 
 def task8(task_number):
+    task = None
+    if task_number == 6 or task_number == 7:
+        print(f"Enter the task number 4 or 5 as a pre-requisite to the task {task_number}")
+        task = task_number
+        task_number = int(input())
     output_folder_7 = "_feedback_output_for_task_"
 
     output_image_features = []
@@ -50,11 +55,14 @@ def task8(task_number):
 
 
         output_image_features = perform_va_files(folder_path, feature, q_image_name, t, b)
-        print("\nDo you want to perfrom task 6 and 7? [y or n]:")
-        key = input()
-        perform_task_6_7_flag = True if key == "y" else False
+        if task is None:
+            print("\nDo you want to perfrom task 6 and 7? [y or n]:")
+            key = input()
+            perform_task_6_7_flag = True if key == "y" else False
+        if task is not None:
+            perform_task_6_7_flag = True
 
-    if perform_task_6_7_flag:
+    if perform_task_6_7_flag and task is None:
         print("Enter task 6 or 7:")
         task = int(input())
         query_image = get_image_arr_from_file(q_image_name)
@@ -76,7 +84,10 @@ def task8(task_number):
         idx = np.random.permutation(len(X_data))
         X_data, new_labels = X_data[idx], label[idx]
 
-        l, right_factor_matrix = perform_dim_red("pca", X_data, 5)
+        print("Enter the value of K for dim_reduction:")
+        k = int(input())
+
+        l, right_factor_matrix = perform_dim_red("pca", X_data, k)
         X_data = np.array(np.matmul(X_data, np.transpose(right_factor_matrix)))
         image_features = np.array(np.matmul(image_features, np.transpose(right_factor_matrix)))
 

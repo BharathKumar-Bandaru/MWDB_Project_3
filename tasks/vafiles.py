@@ -267,8 +267,8 @@ def perform_va_files(folder_path, feature, q_image_name, t, b):
         output_features.append((images[a], image_names[a], image_features[a]))
     save_images_by_clearing_folder(output, "Output_VAFiles")
 
-    print("Number of unique approximations considered are: ", len(approx_set))
-    print("Number of overall approximations considered are ", len(approximations))
+    print("Number of unique images considered are: ", images_considered)
+    print("Number of overall images considered are ", len(approximations))
     print("Number of bytes required for index structure is: ", len(approximations) * len(approximations[0]) / 8)
     print("Number of buckets searched are: ", total_buckets)
     print("The number of false positives are: ", (images_considered - correct_images)/t)
