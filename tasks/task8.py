@@ -31,7 +31,7 @@ def task8(task_number):
         t = int(input())
         results = task4(input_folder=folder_path, feature_model=feature, num_layers=layers, num_hashes_per_layer=hashes_per_layer,
       query_image_path=q_image_name, num_similar_images_to_retrieve=t)
-        print("\nDo you want to perfrom task 6 and 7? [y or n]:")
+        print("\nDo you want to perform task 6 and 7? [y or n]:")
         key = input()
         perform_task_6_7_flag = True if key == "y" else False
 
