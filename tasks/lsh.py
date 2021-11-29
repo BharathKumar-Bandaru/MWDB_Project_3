@@ -46,7 +46,7 @@ class LocalitySensitiveHashing:
 
     def retrieve_objects_in_bucket(self, layer_num, hashcode):
         objects = []
-        if layer_num in self.hash_buckets_per_layer and hashcode in self.hash_buckets_per_layer[layer_num]:
+        if layer_num < len(self.hash_buckets_per_layer) and hashcode in self.hash_buckets_per_layer[layer_num]:
             object_indices = self.hash_buckets_per_layer[layer_num][hashcode]
             return [self.input_image_objects[index] for index in object_indices]
         print(f'Hashcode {hashcode} not found in layer {layer_num} (no elements present in that hash bucket)')
@@ -135,7 +135,7 @@ class LocalitySensitiveHashing:
         """
         print('No. of objects per hash code in each layer:')
         for i in range(len(hash_buckets_per_layer)):
-            print(f'Layer {i + 1}:')
+            print(f'Layer {i}:')
             hash_buckets_dict = hash_buckets_per_layer[i]
             for key in hash_buckets_dict:
                 print(f'{key}: {len(hash_buckets_dict[key])}')
