@@ -50,7 +50,7 @@ if __name__ == "__main__":
                        dim_red_technique=dr, output_folder='output', latent_semantics_file_name=None,
                        use_cached_input_images=True)
 
-        if 3 < task_number < 7:
+        if 3 < task_number < 8:
             task8(task_number)
 
         print("\nEnter the task number, to exit type e: ")

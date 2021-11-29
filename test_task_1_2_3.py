@@ -3,7 +3,7 @@ import numpy as np
 
 from tasks.task1_2_3 import task_1_2_3
 fm = ['cm', 'elbp', 'hog']
-k = [5, 10, 15, 20, 30, 40, "all"]
+k = [5, 10, 20, 50, "all"]
 test = ['100', '500', '1000', '2000', '3000', '4000']
 
 acc = []
@@ -15,8 +15,8 @@ for i in fm:
                use_cached_input_images = True))
             print(acc[-1])
 
-print(np.array(acc))
-
+for each in acc:
+    print(each)
 # task_1_2_3(task_number = 1, input_folder_path = '1000', feature_model = "elbp", k =5, test_folder_path = '100', classifier =  'decision-tree',
 #                dim_red_technique = 'pca', output_folder = 'output', latent_semantics_file_name = None,
 #                use_cached_input_images = True)
