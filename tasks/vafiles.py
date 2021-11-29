@@ -151,7 +151,7 @@ def compute_lower_bound(vector, vq, partition_points, ri):
 
     for j in range(0, len(rq)):
         if ri[j] < rq[j]:
-            lij = vq[j] - partition_points[j][ri[j]]
+            lij = vq[j] - partition_points[j][ri[j] + 1]
         elif ri[j] == rq[j]:
             lij = 0
         else:
