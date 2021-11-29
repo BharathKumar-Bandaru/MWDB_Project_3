@@ -1,4 +1,4 @@
-[# Mwdb-Project-Phase-2
+# Mwdb-Project-Phase-3
 
 To install the packages use
 `pip install -r requirements.txt`.
@@ -9,8 +9,10 @@ To run the project use
 ```
 Outputs:
     1. The .csv files which contantis the semantics will be stored in the folder called "output".
-    2. The n similar images for task 5 will be stored in folder called "output2".
-    3. The other necessary information will be displayed in the console.
+    2. ALl the information is displayed in the console only.
+    3. The outputs for the task 4 are stored in lsh_output.
+    4. The outputs for the task 5 are stored in Output_VAFiles
+    5. The outputs for the task 6 and 7 are stored in the older <Classifier>_feedback_output_task_<pre requisite task number>
 ```
 
 
@@ -20,142 +22,61 @@ For each task the appropriate inputs are asked to get the output after performin
 
 
 
-#### Task 0 
+
 
 ###### Task to create the latent semantics using all the images
 
-When asked for task number type `0`
-```
-Enter the Dataset path : Default_value = "Dataset". This is where images are stored for processing.
-Enter the value of feature: The feature extract method.
-Enter the value of k: Should be an integer and less than the no.of features in the feature extract menthod that is used.
-    If the value of k is more then the feature dimention the program will ask for the input again.
-Enter the value of dimentionality Reductoin: Dimentionality reduction technique: values = [pca, svd, lda, kmeans]
-
-Output will be the latent semantic files in .csv format. 
-```
-
-#### Task 1
-When asked for task number type `1`
+#### Task 1, 2, 3
 
 ```
-Enter the Dataset path : Default_value = "Dataset". This is where images are stored for processing.
-Enter the value of feature: The feature extract method.
-Enter the value of k: Should be an integer and less than the no.of features in the feature extract menthod that is used.
-    If the value of k is more then the feature dimention the program will ask for the input again.
-Enter the value of dimentionality Reductoin: Dimentionality reduction technique: values = [pca, svd, lda, kmeans]
-Enter the type of the images you want to perform the task1.
+Dataset: Dataset input to train or create the classifier model. This acts as the traing dataset.
+Test Image Path: The test images path for classification.
+Feature: The feature method to extract the features of the images - Color moments, ELBP, HOG
+k: The value of k to perform the dimentionality reduction. Can take a string value "all" to use the original features to train.
+classifier: To use which classifier to classify the test data. SVM, Decision-Trees, PPR.
+```
+The inputs for the three tasks are same and they only differ in the labels for each image in the dataset.
 
-Output will be the latent semantic files in .csv format. 
-The subject weights of each latent semantics are displayed in console output.
+#### Task 4, 5
+Common inputs for both task 4 and 5:
+```
+Dataset path: The dataset path to be used for LSH and VA Files.
+Test Image Path: The test images path for classification.
+Test Image name: The test image name to retrieve the t similar images.
+Feature: The feature method to extract the features of the images - Color moments, ELBP, HOG
 ```
 
-#### Task 2
-When asked for task number type `2`
-
+Inputs for task 4:
 ```
-Enter the Dataset path : Default_value = "Dataset". This is where images are stored for processing.
-Enter the value of feature: The feature extract method.
-Enter the value of k: Should be an integer and less than the no.of features in the feature extract menthod that is used.
-    If the value of k is more then the feature dimention the program will ask for the input again.
-Enter the value of dimentionality Reductoin: Dimentionality reduction technique: values = [pca, svd, lda, kmeans]
-Enter the subject_id of the images you want to perform the task2.
+Layers: The number of layers in LSH.
+Hashes: The number of hashes required per layer.
+t: The number of similar images needs to be retrieved.
 
-Output will be the latent semantic files in .csv format. 
-The type weights of each latent semantics are displayed in console output.
+Outputs will be stored in lsh_output folder.
 ```
 
-#### Task 3
-When asked for task number type `3`
-
+Inputs for task 5:
 ```
-Enter the Dataset path : Default_value = "Dataset". This is where images are stored for processing.
-Enter the value of feature: The feature extract method.
-Enter the value of k: Should be an integer and less than the no.of features in the feature extract menthod that is used.
-    If the value of k is more then the feature dimention the program will ask for the input again.
-Enter the value of dimentionality Reductoin: Dimentionality reduction technique: values = [pca, svd, lda, kmeans]
-
-Output will be the .csv file which stores the latent semantics, right factor matrix and similarity matrix
-The type weights pairs of each latent semantics are displayed in decreasing order.  
+t: The number of similar images needed to be retrieved.
+b: The number of bits to be used in VA Files.
 ```
 
-#### Task 4
-When asked for task number type `4`
-
+#### Task 6, 7
 ```
-Enter the Dataset path : Default_value = "Dataset". This is where images are stored for processing.
-Enter the value of feature: The feature extract method.
-Enter the value of k: Should be an integer and less than the no.of features in the feature extract menthod that is used.
-    If the value of k is more then the feature dimention the program will ask for the input again.
-Enter the value of dimentionality Reductoin: Dimentionality reduction technique: values = [pca, svd, lda, kmeans]
+These tasks are run after tasks 4 and 5 are performed which is a pre-requisite.
 
-Output will be the .csv file which stores the latent semantics, right factor matrix and similarity matrix
-The subject weights pairs of each latent semantics are displayed in decreasing order.  
+Inputs for these tasks are retrieved from the output of task 4 or 5
+Outputs will be stored in the folder {classifier}_feedback_output_for_task_{4/5}.
+
+Task 6 alone takes value of 'k' to perform the dimentinality reduction since decision tree has heavy computations.
 ```
-
-#### Task 5
-When asked for task number type `5`
-
-```
-Enter the image path: Dataset/<Image_name>. Eg: Dataset/image-cc-1-1.png
-Enter the path for latent semantics: output/<Sematic_file>. Eg: output/cm_svd_latent_semantics.csv
-Enter the value of n to retrieve the n similar images.
-Enter the feature value that of the latent semantics.
-
-Output will generate top n similar files and stores them in output2. 
-```
-
-#### Task 6
-When asked for task number type `6`
-
-```
-Enter the image path: Dataset/<Image_name>. Eg: Dataset/image-cc-1-1.png
-Enter the path for latent semantics: output/<Sematic_file>. Eg: output/cm_svd_latent_semantics.csv
-Enter the feature value that of the latent semantics.
-Enter the dimentionality reduction of the latent sematnics.
-
-Output will generate type lable to which the input image belongs to. 
-```
-
-
-#### Task 7
-When asked for task number type `7`
-
-```
-Enter the image path: Dataset/<Image_name>. Eg: Dataset/image-cc-1-1.png
-Enter the path for latent semantics: output/<Sematic_file>. Eg: output/cm_svd_latent_semantics.csv
-Enter the feature value that of the latent semantics.
-Enter the dimentionality reduction of the latent sematnics.
-
-Output will generate subject id to which the input image belongs. 
-```
-
-#### Task 8
-When asked for task number task `8`
-
-```
-Enter the similarity matrix path: output/<semantic_file>. Eg: output/cm_svd_latent_semantics.csv
-Enter the value of n.
-Enter the value of m.
-
-Output displays the n most similar subjects.
-```
-
-#### Task 9
-When asked for task number task `9`
-
-```
-Enter the path of similarity matrix: 
-Enter the value of n.
-Enter the value of m.
-
-Output will be top subject id's
-```
-
 
 #### Project Structure.
 
 The main.py is the start of the code.
 The folder tasks contains the code for each tasks and supporting code functions.
 The output folder contains the .csv of latent semantics.
-The output2 folder contains the output images of task 5.
+The lsh_output contains the results of task 4
+The Output_VAFiles contains the results of task 5
+The decion_tree_feedback_output_for_task_4/5 contains the outputs for task 6 when ran after task 4 or 5
+The svm_feedback_output_for_task_4/5 contains the outputs for task 7 when ran after task 4 or 5
