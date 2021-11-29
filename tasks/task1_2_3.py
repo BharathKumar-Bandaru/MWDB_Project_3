@@ -177,9 +177,13 @@ def print_classification_stats(predicted_labels, correct_labels) :
         # print(f'{i+1}: True Label -  {correct_labels[i]}, Assigned Label - {predicted_labels[i]}')
         if correct_labels[i] == predicted_labels[i]:
             correct_labels_count += 1
-    print('Accuracy is ' + str(correct_labels_count * 100 / len(predicted_labels)) + '%')
+    den = len(predicted_labels) if len(predicted_labels) != 0 else 1
+    print('Accuracy is ' + str(correct_labels_count * 100 / den) + '%')
 
     unique_label = np.unique([correct_labels, predicted_labels])
+    min_length = min(len(correct_labels), len(predicted_labels))
+    correct_labels = correct_labels[:min_length]
+    predicted_labels = predicted_labels[:min_length]
     conf_matrix = pd.DataFrame(
         confusion_matrix(correct_labels, predicted_labels, labels=unique_label),
         index = unique_label,

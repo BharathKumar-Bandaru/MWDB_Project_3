@@ -33,13 +33,13 @@ class PersonalizedPageRankClassifier:
             selected_index_score_tuples = sorted(index_score_tuples, key = lambda x: x[1], reverse = True)[:self.num_nodes_to_consider_for_classifying]
             label_dict = {}
             for (index,score) in selected_index_score_tuples:
-                if score <= 0:
-                    break
                 img_obj = self.input_image_objects[index]
                 label_val = getattr(img_obj, self.classification_label)
                 if label_val not in label_dict:
                     label_dict[label_val] = 0
                 label_dict[label_val] += 1
+                if score <= 0:
+                    break
 
             if len(label_dict) > 0:
                 sorted_items = sorted(label_dict.items(), key = lambda x: x[1], reverse = True)
