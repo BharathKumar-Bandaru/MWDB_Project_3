@@ -45,8 +45,12 @@ class LocalitySensitiveHashing:
         return hash_codes
 
     def retrieve_objects_in_bucket(self, layer_num, hashcode):
-        object_indices = self.hash_buckets_per_layer[layer_num][hashcode]
-        return [self.input_image_objects[index] for index in object_indices]
+        objects = []
+        if layer_num in self.hash_buckets_per_layer and hashcode in self.hash_buckets_per_layer[layer_num]:
+            object_indices = self.hash_buckets_per_layer[layer_num][hashcode]
+            return [self.input_image_objects[index] for index in object_indices]
+        print(f'Hashcode {hashcode} not found in layer {layer_num} (no elements present in that hash bucket)')
+        return objects
 
     def get_hash_buckets_per_layer(self):
         return self.hash_buckets_per_layer
@@ -112,11 +116,12 @@ class LocalitySensitiveHashing:
         correct_results = set(correct_results)
         unique_images_considered = set(unique_images_considered)
 
-        miss_rate = len(correct_results - retrieved_results)/n #false negative rate
-        false_positive_rate = len(retrieved_results - correct_results)/n
 
-        false_positive_rate_with_target_count = len(unique_images_considered - correct_results)/n
-        false_positive_rate_with_images_considered = len(unique_images_considered - correct_results)/len(unique_images_considered)
+        miss_rate = len(correct_results - retrieved_results)/n if n != 0 else 0#false negative rate
+        false_positive_rate = len(retrieved_results - correct_results)/n if n != 0 else 0
+
+        false_positive_rate_with_target_count = len(unique_images_considered - correct_results)/n if n != 0 else 0
+        false_positive_rate_with_images_considered = len(unique_images_considered - correct_results)/len(unique_images_considered) if len(unique_images_considered) != 0 else 0
         print(f'False Positive Rate encountered in the index structure (w.r.t target count): {false_positive_rate_with_target_count}')
         print(f'False Positive Rate encountered in the index structure (w.r.t images considered) : {false_positive_rate_with_images_considered}')
         print(f'False Positive Rate of the retrieved results: {false_positive_rate}')
