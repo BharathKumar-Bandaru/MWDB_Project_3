@@ -60,16 +60,17 @@ def task8(task_number):
         if task is not None:
             perform_task_6_7_flag = True
 
+    query_image = get_image_arr_from_file(q_image_name)
+    query_image_features = get_flattened_features_for_images([query_image], feature)
+    query_image_features = query_image_features[0]
+
+    image_features = np.array([each[2] for each in output_image_features])
+    image_names = np.array([each[1] for each in output_image_features])
+    images = np.array([each[0] for each in output_image_features])
+
     if perform_task_6_7_flag and task is None:
         print("Enter task 6 or 7:")
         task = int(input())
-        query_image = get_image_arr_from_file(q_image_name)
-        query_image_features = get_flattened_features_for_images([query_image], feature)
-        query_image_features = query_image_features[0]
-
-        image_features = np.array([each[2] for each in output_image_features])
-        image_names = np.array([each[1] for each in output_image_features])
-        images = np.array([each[0] for each in output_image_features])
 
     if perform_task_6_7_flag and task == 6:
         relevant_images, non_relevant_images, relevant_images_id, non_relevant_image_id = mark_relevant_non_relevant(
