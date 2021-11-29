@@ -5,7 +5,7 @@ from tasks.svm import *
 from tasks.task4 import *
 from tasks.decision_trees import *
 from scipy.spatial.distance import cityblock, euclidean
-
+import os
 
 def task8(task_number):
     output_folder_7 = "_feedback_output_for_task_"
@@ -14,10 +14,10 @@ def task8(task_number):
     perform_task_6_7_flag = False
     print(f"Enter the database folder path:")
     folder_path = input()
-    print(f"Enter the feature mode [cm, elbp, hog]:")
+    print(f"Enter the feature model [cm, elbp, hog]:")
     feature = input()
-    print("Enter the test image path:")
-    test_image_path = input()
+    print("Enter the test image folder path:")
+    test_image_folder_path = input()
     print("Enter the test image name:")
     test_image_name = input()
 
@@ -26,8 +26,7 @@ def task8(task_number):
         layers = int(input())
         print(f"Enter the number of hashes per layer:")
         hashes_per_layer = int(input())
-        print("Enter the test image path:")
-        q_image_name = os.path.join(test_image_path, test_image_name)
+        q_image_name = os.path.join(test_image_folder_path, test_image_name)
         print(f"Enter the number of similar images needed to be retrieved:")
         t = int(input())
         results = task4(input_folder=folder_path, feature_model=feature, num_layers=layers, num_hashes_per_layer=hashes_per_layer,
