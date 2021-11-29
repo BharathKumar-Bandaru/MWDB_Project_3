@@ -7,7 +7,6 @@ from .weight_matrices_calc import get_subject_weight_matrix, get_type_weight_mat
 from .features import *
 from .dim_red import perform_dim_red
 from .image import Image
-import icecream
 
 #dictionary of image datasets based on folder
 #folder_name is the key, list of image_dict is the value

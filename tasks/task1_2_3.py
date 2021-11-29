@@ -3,7 +3,6 @@ from .features import *
 from .dim_red import perform_dim_red
 from numpy import genfromtxt
 from .custom_svm import *
-from .svm import *
 from .ppr_task import perform_ppr_classification
 from tasks.decision_trees import *
 from sklearn.metrics import confusion_matrix, classification_report #for reporting the model performance

@@ -1,7 +1,6 @@
 import numpy as np
 from tasks.vafiles import *
 from tasks.custom_svm import *
-from tasks.svm import *
 from tasks.task4 import *
 from tasks.decision_trees import *
 from scipy.spatial.distance import cityblock, euclidean
@@ -50,7 +49,7 @@ def task8(task_number):
         print("Enter the number of bits(b):")
         b = int(input())
 
-        q_image_name = os.path.join(test_image_path, test_image_name)
+        q_image_name = os.path.join(test_image_folder_path, test_image_name)
 
 
         output_image_features = perform_va_files(folder_path, feature, q_image_name, t, b)
@@ -71,7 +70,6 @@ def task8(task_number):
         image_features = np.array([each[2] for each in output_image_features])
         image_names = np.array([each[1] for each in output_image_features])
         images = np.array([each[0] for each in output_image_features])
-        # icecream.ic(image_features.shape, image_names.shape, images.shape, image_names)
 
     if perform_task_6_7_flag and task == 6:
         relevant_images, non_relevant_images, relevant_images_id, non_relevant_image_id = mark_relevant_non_relevant(
@@ -160,80 +158,6 @@ def task8(task_number):
             img_result.append((each[2], f"{i+1}_{each[1]}"))
         save_images_by_clearing_folder(img_result, output_folder_7)
 
-        # weights = svm.get_weights(image_features)
-        # max_ = np.argmax(weights, axis=1)
-        # weights_ = []
-        # weights_non_ = []
-        # for i, val in enumerate(max_):
-        #     if val == 1:
-        #         weights_.append([weights[i][1], i])
-        #     else:
-        #         weights_non_.append([weights[i][0], i])
-        # weights_ = sorted(weights_, key = lambda t: t[0], reverse=True)
-        # weights_non_ = sorted(weights_non_, key = lambda t: t[0], reverse=True)
-        #
-        # img_result = []
-        # print("-----------")
-        # print(f"The top {t} images for input image {q_image_name}.")
-        # count = 1
-        # for i in weights_[:t]:
-        #     img_result.append((images[i[1]], f'{count}_{image_names[i[1]]}'))
-        #     print(image_names[i[1]])
-        #     count+=1
-        # if(len(img_result) < t):
-        #     count = 0
-        #     while(len(img_result) <= t):
-        #         img_result.append((images[weights_non_[count][1]], f'{count}_{image_names[weights_non_[count][1]]}'))
-        #         print(image_names[weights_non_[count][1]])
-        #         count+=1
-
-
-        # icecream.ic(final_predictions)
-
-        # icecream.ic([out[1] for out in output_image_features])
-        # image_features = np.array([out[2] for out in output_image_features[10:]])
-        # image_names = np.array([out[1] for out in output_image_features[10:]])
-
-        # images_with_attributes = get_images_and_attributes_from_folder(folder_path)
-        # images = [image_dict['image'] for image_dict in images_with_attributes]
-        # image_features = get_flattened_features_for_images(images, feature)
-        # image_names = [image_dict['filename'] for image_dict in images_with_attributes]
-
-
-        # labels = svm.predict(image_features)
-        # # icecream.ic(labels)
-        # weights = svm.get_weights(image_features)
-        # # icecream.ic(weights)
-        # max_ = np.argmax(weights, axis=1)
-        # # icecream.ic(max_)
-        # weights_ = []
-        # weights_non_ = []
-        # for i, val in enumerate(max_):
-        #     if val == 1:
-        #         weights_.append([weights[i][1], i])
-        #     else:
-        #         weights_non_.append([weights[i][0], i])
-        # weights_ = sorted(weights_, key = lambda t: t[0], reverse=True)
-        # weights_non_ = sorted(weights_non_, key = lambda t: t[0], reverse=True)
-        # # icecream.ic(weights_)
-        # img_result = []
-        # print("-----------")
-        # print(f"The top {t} images for input image {q_image_name}.")
-        # count = 1
-        # for i in weights_[:t]:
-        #     img_result.append((images[i[1]], f'{count}_{image_names[i[1]]}'))
-        #     print(image_names[i[1]])
-        #     count+=1
-        # if(len(img_result) < t):
-        #     count = 0
-        #     while(len(img_result) <= t):
-        #         img_result.append((images[weights_non_[count][1]], f'{count}_{image_names[weights_non_[count][1]]}'))
-        #         print(image_names[weights_non_[count][1]])
-        #         count+=1
-        #
-        # output_folder_7 = f"{output_folder_7}_{task_number}"
-        # save_images_by_clearing_folder(img_result, output_folder_7)
-
 
 def mark_relevant_non_relevant(output_images):
     image_names = [f"{i+1}. {each[1]}" for i, each in enumerate(output_images)]
@@ -256,20 +180,6 @@ def mark_relevant_non_relevant(output_images):
 
     return revelant_images, non_revelant_images, relevant_images_id, non_relevant_image_id
 
-    # labels = []
-    # X_data = []
-    # names = []
-    #
-    # for each in output_images:
-    #     print(f"Enter 1 for relevant and enter 0 for non-relevant for image {each[1]}:")
-    #     val = int(input())
-    #     labels.append(val)
-    #     X_data.append(each[2])
-    #     names.append(each[1])
-    # print(f"------------")
-    # for each_ in zip(names, labels):
-    #     print(f"{each_[0]}: {each_[1]}")
-    # return np.array(X_data), np.array(labels)
 
 def get_top_k(q_image, image_features, image_names, image):
     top_k_images = []
