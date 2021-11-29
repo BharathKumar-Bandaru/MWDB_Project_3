@@ -38,6 +38,26 @@ def distribute_partition_points(feature_vector, dim_num, bits):
     partition_points.append(int(col[len(col)-1] + 1.0))
     return partition_points
 
+def compute_color_moment_of_image(image):
+    featureDescription = []
+    imageSize = (64, 64)
+    counterx = 8
+    countery = 8
+    count = 0
+
+    while counterx <= 64 and countery <= 64:
+        count += 1
+        nparray = get_window(counterx - 8, countery - 8, counterx, countery, image)
+        mean = np.mean(nparray)
+        deviation = np.std(nparray)
+        skewness = scipy.stats.skew(nparray, axis=None)
+        featureDescription.append((mean + deviation + skewness)/3.0)
+
+        if (countery >= 64):
+            counterx += 8
+            countery = 0
+        countery += 8
+    return featureDescription
 
 def bin(n, length):
     i = 1 << length
@@ -131,7 +151,7 @@ def compute_lower_bound(vector, vq, partition_points, ri):
 
     for j in range(0, len(rq)):
         if ri[j] < rq[j]:
-            lij = vq[j] - partition_points[j][ri[j]+1]
+            lij = vq[j] - partition_points[j][ri[j]]
         elif ri[j] == rq[j]:
             lij = 0
         else:
@@ -202,7 +222,15 @@ def perform_va_files(folder_path, feature, q_image_name, t, b):
     image_data_attributes = get_images_and_attributes_from_folder(folder_path)
     images = [img['image'] for img in image_data_attributes]
     image_names = [img['filename'] for img in image_data_attributes]
-    image_features = get_flattened_features_for_images(images, feature)
+    if feature == 'cm':
+        image_features = []
+        for each in images:
+            image_features.append(compute_color_moment_of_image(each))
+    else:
+        image_features = get_flattened_features_for_images(images, feature)
+    # if feature == 'cm':
+    #     image_features = np.array(image_features) * 100
+    #     image_features = image_features.tolist()
 
     # q_image = get_image_arr_from_file(q_image_name)
     # query_image_features = get_flattened_features_for_images([q_image], feature)
@@ -231,9 +259,12 @@ def perform_va_files(folder_path, feature, q_image_name, t, b):
     """Read the query image and compute its feature vecyor"""
     # test_dataset = get_images_and_attributes_from_folder(q_image_name)
     query_image = get_image_object_from_file(q_image_name)
-    query_image_features = get_flattened_features_for_images([query_image.image_arr], feature)
-    query_image_features = query_image_features[0]
-    query_image.features = query_image_features
+    if feature == 'cm':
+        query_image_features = compute_color_moment_of_image(each)
+    else:
+        query_image_features = get_flattened_features_for_images([query_image.image_arr], feature)
+        query_image_features = query_image_features[0]
+        query_image.features = query_image_features
 
     query_vector = query_image_features
 
@@ -266,11 +297,11 @@ def perform_va_files(folder_path, feature, q_image_name, t, b):
         output.append((images[a], image_names[a]))
         output_features.append((images[a], image_names[a], image_features[a]))
     save_images_by_clearing_folder(output, "Output_VAFiles")
-
     print("Number of unique images considered are: ", images_considered)
     print("Number of overall images considered are ", len(approximations))
     print("Number of bytes required for index structure is: ", len(approximations) * len(approximations[0]) / 8)
     print("Number of buckets searched are: ", total_buckets)
-    print("The number of false positives are: ", (images_considered - correct_images)/t)
-    print("The miss rate is: ", (t - correct_images)/t)
+    print("The false positives rate acc to all images considered: ", (images_considered - correct_images)/images_considered)
+    print("The false positives rate for t images is: ", (t - correct_images)/t)
+    print("The miss rate for t images is: ", (t - correct_images)/t)
     return output_features
